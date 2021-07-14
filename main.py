@@ -67,7 +67,7 @@ async def list_cult_members(ctx,):
 # Eat Messages 
 @client.command(aliases=['eatm'])
 async def eatmessage(ctx, ammount : int):
-  if ctx.author.name == "FusionSid" or "kevinsoup721":
+  if ctx.author.name == "FusionSid":
     await ctx.channel.purge(limit=ammount)
     await ctx.send("Yum!")
   else:
@@ -134,6 +134,11 @@ async def commands(ctx):
 async def duckhelp(ctx):
   await ctx.send("__Duck Bot Help__\n\nIf you need help DM FusionSid,\n\nIf you need a list of commands: .commands or .commandslist")
 
+
+# Message User
+@client.command()
+async def dm(ctx, member:discord.Member, *, message):
+  
 
 # Errors
 @client.event
