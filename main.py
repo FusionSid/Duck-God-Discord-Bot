@@ -18,7 +18,7 @@ client = commands.Bot(prefix)
 # Bot is online
 @client.event
 async def on_ready():
-  await client.change_presence(activity=discord.Game("Eating Frogs"))
+  await client.change_presence(activity=discord.Game("Hunting Frogs"))
   print("A wild duck god has spawned\n\nDuck god is ready to eat")
 
 
@@ -124,7 +124,7 @@ async def ducksearch(ctx, *, search):
 # Command list
 @client.command(aliases=["commandslist"])
 async def commands(ctx):
-  commandslist = "__List of Duck Bot Commands__\n\n.jc [@name] = Registers your name in the duck cult member database.\n.lc [index] = Removes your name from the data base (Useless command, no one wants to leave the duck god).\n.ducksearch [yoursearch] = searches for an image\n.8ball [question] uses the magical 8 ball to answers you life questions\n.duckroast = Roast you\n.help = asks for help\n\nThats all the commands at the moment, When a new command is added it will be added to the list."
+  commandslist = "__List of Duck Bot Commands__\n\n.jc [@name] = Registers your name in the duck cult member database.\n.lc [index] = Removes your name from the data base (Useless command, no one wants to leave the duck god).\n.ducksearch [yoursearch] = searches for an image\n.8ball [question] = uses the magical 8 ball to answers you life questions\n.duckroast = Roast you\n.duckhelp = asks for help\n.lcm = Lists all members of the duck cult (frogs stay away from these people if you wanna live)\n\nThats all the commands at the moment, When a new command is added it will be added to the list."
   await ctx.send(commandslist)
 
 
@@ -137,12 +137,8 @@ async def duckhelp(ctx):
 # Errors
 @client.event
 async def on_command_error(ctx, error):
-  if isinstance(error, commands.CommandNotFound):
-        insultswrongcmd = ["Are you dumb?", "U retarted?", "Do me a favour and go get a brain cause you clearly dont have one", "Retard", "You fool", "Ducking Hell", "Duck You"]
-
-        await ctx.send(f'{random.choice(insultswrongcmd)} Thats not a real command')
-  else:
-    await ctx.send("Ducking Hell, I've encountered an error")
+  insultswrongcmd = ["Are you dumb?", "U retarted?", "Do me a favour and go get a brain cause you clearly dont have one", "Retard", "You fool", "Ducking Hell", "Duck You"]
+  await ctx.send(random.choice(insultswrongcmd), "Ducking Hell\nBecause of you little ducker, I've encountered an error")
 
 
 # Run 
