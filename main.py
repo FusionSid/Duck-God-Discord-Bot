@@ -15,7 +15,7 @@ prefix = '.'
 
 client = commands.Bot(prefix)
 
-commandslist = "__List of Duck Bot Commands__\n\n.jc [@name] = Registers your name in the duck cult member database.\n.lc [index] = Removes your name from the data base (Useless command, no one wants to leave the duck god).\n.dm [user] [message] = Dms user message\n.ducksearch [yoursearch] = searches for an image\n.8ball [question] = uses the magical 8 ball to answers you life questions\n.duckroast = Roast you\n.duckhelp = asks for help\n.lcm = Lists all members of the duck cult (frogs stay away from these people if you wanna live)\n\nThats all the commands at the moment, When a new command is added it will be added to the list."
+commandslist = "__List of Duck Bot Commands__\n\n.jc [@name] = Registers your name in the duck cult member database.\n.lc [index] = Removes your name from the data base (Useless command, no one wants to leave the duck god).\n.dm [user] [message] = Dms user message\n.ducksearch [yoursearch] = searches for an image\n.8ball [question] = uses the magical 8 ball to answers you life questions\n.duckroast = Roast you\n.duckhelp = asks for help\n.lcm = Lists all members of the duck cult (frogs stay away from these people if you wanna live)\n.createacc = creates account in the duck bank\n.beg = Begs for money, has a 60s cooldown.\n.bal = Shows your balance\n\n\nThats all the commands at the moment, When a new command is added it will be added to the list."
 
 
 # Bot is online
@@ -137,7 +137,7 @@ async def ducksearch(ctx, *, search):
 async def duckdm(ctx, member:discord.Member, *, message):
   embeddm = discord.Embed(title = message)
   await member.send(embed=embeddm)
-  await ctx.channel.purge(limit=2)
+  await ctx.channel.purge(limit=1)
   await ctx.send("Sent")
 
 
@@ -154,18 +154,12 @@ async def createacc(ctx):
 
 
 # Balance in duckcoins
-@client.command(aliases=["duckbal"])
-async def accountbalance(ctx):
+@client.command(aliases=["bal"])
+async def duckbal(ctx):
   if ctx.author.name in db.keys():
     await ctx.send(f'__**{ctx.author.name}**__\nAccount balance is {db[ctx.author.name]}')
   else:
     await ctx.send("Looks like you don't have an account. To create one: .createacc")
-
-
-# admin only reset account bal to 0
-@client.command()
-async def duckbal0(ctx):
-  del db[ctx.author.name]
 
 
 # Beg
@@ -195,10 +189,10 @@ async def duckhelp(ctx):
 
 
 # Errors
-@client.event
-async def on_command_error(ctx, error):
+#@client.event
+#async def on_command_error(ctx, error):
   insultswrongcmd = ["Are you dumb?", "U retarted?", "Do me a favour and go get a brain cause you clearly dont have one", "Retard", "You fool", "Ducking Hell", "Duck You"]
-  await ctx.send(f'{random.choice(insultswrongcmd)}\nBecause of you little ducker, Ive encountered an error')
+  #await ctx.send(f'{random.choice(insultswrongcmd)}\nBecause of you little ducker, Ive encountered an error')
 
 
 # Run 
