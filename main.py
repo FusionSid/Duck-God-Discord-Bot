@@ -9,7 +9,7 @@ from roastlist import roasts
 
 # Please Don't Ruin This Bot
 
-isapi_key = ""
+isapi_key = "AIzaSyCj52wnSciil-4JPd6faOXXHfEb1pzrCuY"
 
 prefix = '.'
 
@@ -114,7 +114,7 @@ async def ducksearch(ctx, *, search):
     ran = random.randint(0, 9)
     resource = build("customsearch", "v1", developerKey=isapi_key).cse()
     result = resource.list(
-        q=f"{search}", cx="<YOUR SEARCH ENGINE ID>", searchType="image"
+        q=f"{search}", cx="54c1117c3e104029b", searchType="image"
     ).execute()
     url = result["items"][ran]["link"]
     embed1 = discord.Embed(title=f"Duck Seach:({search.title()})")
