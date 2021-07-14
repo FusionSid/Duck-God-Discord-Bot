@@ -5,8 +5,11 @@ import random
 from keep_alive import keep_alive
 from replit import db
 import json
+from googleapiclient.discovery import build
 
 # Please Don't Ruin This Bot
+
+isapi_key = ""
 
 prefix = '.'
 
@@ -73,19 +76,53 @@ async def eatmessage(ctx, ammount : int):
 # 8ball
 @client.command()
 async def _8ball(ctx, question : str):
-  lol = 1
+  _8ballans = [
+  "As I see it, yes",
+	"It is certain",
+	"It is decidedly so",
+	"Most likely",
+	"Outlook good",
+	"Signs point to yes",
+	"Without a doubt",
+	"Yes",
+	"Yes - definitely",
+	"You may rely on it",
+  "Reply hazy, try again",
+	"Ask again later",
+	"Better not tell you now",
+	"Cannot predict now",
+	"Concentrate and ask again",
+  "Don't count on it",
+	"My reply is no",
+	"My sources say no",
+	"Outlook not so good",
+	"Very doubtful"
+  ]
+  _8ballran = random.choice(_8ballans)
+  ctx.send(f'__Duck 8 ball__\n\n{_8ballran}')
+
 
 # Duck search
-
+@client.command(aliases=["ds"])
+async def ducksearch(ctx, *, search):
+    ran = random.randint(0, 9)
+    resource = build("customsearch", "v1", developerKey=imapi_key).cse()
+    result = resource.list(
+        q=f"{search}", cx="<YOUR SEARCH ENGINE ID>", searchType="image"
+    ).execute()
+    url = result["items"][ran]["link"]
+    embed1 = discord.Embed(title=f"Duck Seach:({search.title()})")
+    embed1.set_image(url=url)
+    await ctx.send(embed=embed1)
 
 # Command list
-@client.command()
+@client.command(aliases="commandslist")
 async def commands(ctx):
   commandslist = "__List of Duck Bot Commands__\n\n.jc [@name] = Registers your name in the duck cult member database.\n.lc [index] = Removes your name from the data base (Useless command, no one wants to leave the duck god).\n.ducksearch [yoursearch] = searches for an image\n.duckpic = searches for some duckpics\n.8ball [question] uses the magical 8 ball to answers you life questions\n.help = asks for help\n\nThats all the commands at the moment, When a new command is added it will be added to the list."
   await ctx.send(commandslist)
 
 # .Help
-@client.command()
+@client.command(aliases=['help'])
 async def duckhelp(ctx):
   await ctx.send("__Duck Bot Help__\n\nIf you need help DM FusionSid,\n\nIf you need a list of commands: .commands or .commandslist")
 
