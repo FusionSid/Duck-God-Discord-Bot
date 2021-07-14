@@ -132,6 +132,20 @@ async def ducksearch(ctx, *, search):
     await ctx.send(embed=embed1)
 
 
+# Feed Duck
+@client.command(aliases=['feed'])
+async def feedduck(ctx):
+  duckpfed = db["hungerbar"]
+  duckfed = duckpfed + 1
+  await ctx.send(f'Thank you for feeding me\nDuck hunger level is{duckfed}/100')
+
+# Duck Hunger
+@client.command(aliases=['hunger'])
+async def checkduchhunger(ctx):
+  hungerlevel = db["hungerbar"]
+  await ctx.send(f'Duck Hunger is at {hungerlevel}/100')
+
+
 # Message User
 @client.command(aliases=["dm"])
 async def duckdm(ctx, member:discord.Member, *, message):
@@ -189,10 +203,10 @@ async def duckhelp(ctx):
 
 
 # Errors
-#@client.event
-#async def on_command_error(ctx, error):
+@client.event
+async def on_command_error(ctx, error):
   insultswrongcmd = ["Are you dumb?", "U retarted?", "Do me a favour and go get a brain cause you clearly dont have one", "Retard", "You fool", "Ducking Hell", "Duck You"]
-  #await ctx.send(f'{random.choice(insultswrongcmd)}\nBecause of you little ducker, Ive encountered an error')
+  print(f'{random.choice(insultswrongcmd)}\nBecause of you little ducker, Ive encountered an error')
 
 
 # Run 

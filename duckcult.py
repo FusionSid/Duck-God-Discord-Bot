@@ -1,25 +1,11 @@
-lol = ["
 # Duck Hunger Cowntdown
+import time
+from replit import db
 
-hunger = 100
-db["hunger"] = hunger
+hunger = db["hungerbar"]
 
-while hunger > 0:
-  t.sleep(5)
+while hunger != 0:
+  hunger = db["hungerbar"]
+  time.s(60)
   hunger = hunger - 1
   db["hunger"] = hunger
-
-@client.command(aliases=["feed"])
-
-async def feedduck(ctx):
-    
-  if hunger >= 100:
-    await ctx.send("Duck is full right now")
-  if hunger < 100:
-    hunger = hunger + 1
-    db["hunger"] = hunger
-    await ctx.send("Thank you for feeding me\nI've decided to let you live")
-
-@client.command(aliases=["hunger"])
-async def checkhunger(ctx):
-  await ctx.send(f'Duck Hunger: {hunger}')"]
