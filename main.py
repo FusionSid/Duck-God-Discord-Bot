@@ -79,8 +79,8 @@ async def eatmessage(ctx, ammount : int):
   if ctx.author.name == "FusionSid":
     await ctx.channel.purge(limit=ammount)
     await ctx.send("Yum!")
-  else:
-    ctx.send("You dont have permission to do that")
+  if ctx.author.name != "FusionSid":
+    await ctx.send("You don't have permission to do that")
 
 
 # 8ball
@@ -137,7 +137,49 @@ async def ducksearch(ctx, *, search):
 async def duckdm(ctx, member:discord.Member, *, message):
   embeddm = discord.Embed(title = message)
   await member.send(embed=embeddm)
+  await ctx.channel.purge(limit=2)
+  await ctx.send("Sent")
 
+
+# Duck Coin Stuff:
+
+# Duck Coin Create Account
+@client.command()
+async def createacc(ctx):
+  if ctx.author.name in db.keys():
+    await ctx.send("You already have an account")
+  else:
+    db[ctx.author.name] = 0
+    await ctx.send("Account Created!")
+
+
+# Balance in duckcoins
+@client.command(aliases=["duckbal"])
+async def accountbalance(ctx):
+  if ctx.author.name in db.keys():
+    await ctx.send(f'__**{ctx.author.name}**__\nAccount balance is {db[ctx.author.name]}')
+  else:
+    await ctx.send("Looks like you don't have an account. To create one: .createacc")
+
+
+# admin only reset account bal to 0
+@client.command()
+async def duckbal0(ctx):
+  del db[ctx.author.name]
+
+
+# Beg
+@client.command()
+@commands.cooldown(1, 60, commands.BucketType.user)
+async def beg(ctx):
+  if ctx.author.name in db.keys():
+    afb = random.randint(1, 100)
+    abrn = db[ctx.author.name] + afb
+    db[ctx.author.name] = abrn
+    await ctx.send(f'Nice you got given {afb} duckcoins\nYou cant beg for another 60s')
+  else:
+    await ctx.send("Looks like you don't have an account, Where do you think im gonna put the money? To create one: .createacc")
+    
 
 
 # Command list
@@ -156,7 +198,7 @@ async def duckhelp(ctx):
 @client.event
 async def on_command_error(ctx, error):
   insultswrongcmd = ["Are you dumb?", "U retarted?", "Do me a favour and go get a brain cause you clearly dont have one", "Retard", "You fool", "Ducking Hell", "Duck You"]
-  await ctx.send(random.choice(insultswrongcmd), "Ducking Hell\nBecause of you little ducker, I've encountered an error")
+  await ctx.send(f'{random.choice(insultswrongcmd)}\nBecause of you little ducker, Ive encountered an error')
 
 
 # Run 
