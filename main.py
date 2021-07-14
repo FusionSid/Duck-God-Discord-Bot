@@ -139,6 +139,17 @@ async def duckhelp(ctx):
 @client.command()
 async def dm(ctx, member:discord.Member, *, message)
 
+
+# New Member Join
+@client.event
+async def on_member_join():
+  userjoinembed = discord.Embed(
+    title = 'Duck God Welcome Message',
+    description = f'Welcome {user.mention},\nI am a duck god.\nI destroy worlds, galaxies, universes and ... \n\n\Frogs.\nI am the leader of the duck cult.\n If you want to join the cult type: .jc {user.mention}.It wont work here you have to do it on the server. You may wanna see what i can do. Here is my command list as of now:\n{commandslist}\n\n\nIf you choose not to join the cult, Youre in trouble'
+  )
+  await member.send(embed=userjoinembed)
+    
+
   
 
 # Errors
