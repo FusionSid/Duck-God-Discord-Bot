@@ -137,7 +137,8 @@ async def duckhelp(ctx):
 
 # Message User
 @client.command()
-async def dm(ctx, member:discord.Member, *, message):
+async def dm(ctx, member:discord.Member, *, message)
+
   
 
 # Errors
