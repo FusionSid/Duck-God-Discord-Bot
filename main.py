@@ -34,6 +34,7 @@ def update_cult_members(member):
 @client.command(aliases=['jc'])
 async def joincult(ctx, dcname : str):
   update_cult_members(dcname)
+  await ctx.send(f'{dcname} has joined the cult')
 
 
 # Leave Cult
