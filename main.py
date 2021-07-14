@@ -13,8 +13,7 @@ isapi_key = "AIzaSyCj52wnSciil-4JPd6faOXXHfEb1pzrCuY"
 
 prefix = '.'
 
-intents = discord.Intents().all()
-client = commands.Bot(prefix, intents=intents)
+client = commands.Bot(prefix)
 
 commandslist = "__List of Duck Bot Commands__\n\n.jc [@name] = Registers your name in the duck cult member database.\n.lc [index] = Removes your name from the data base (Useless command, no one wants to leave the duck god).\n.dm [user] [message] = Dms user message\n.ducksearch [yoursearch] = searches for an image\n.8ball [question] = uses the magical 8 ball to answers you life questions\n.duckroast = Roast you\n.duckhelp = asks for help\n.lcm = Lists all members of the duck cult (frogs stay away from these people if you wanna live)\n\nThats all the commands at the moment, When a new command is added it will be added to the list."
 
@@ -23,18 +22,13 @@ commandslist = "__List of Duck Bot Commands__\n\n.jc [@name] = Registers your na
 @client.event
 async def on_ready():
   await client.change_presence(activity=discord.Game("Hunting Frogs"))
-  await client.get_channel().send("A wild duck god has spawned\n(Duck God is back Online!!!)")
   print("A wild duck god has spawned\n\nDuck god is ready to eat")
 
 
 # New Member Join
 @client.event
-async def on_member_join(member):
-  await client.get_channel().send(f'Welcome {member.name} Check your dms')
-  joinembed = discord.Embed(
-    title = 'Duck God Welcome Message',
-    description = f'Welcome {member.name},\nI am a duck god.\nI destroy worlds, galaxies, universes and... \n\n\Frogs.\nI am the leader of the duck cult.\n If you want to join the cult type: .jc {member.name}.It wont work here you have to do it on the server. You may wanna see what i can do. Here is my command list as of now:\n{commandslist}\n\n\nIf you choose not to join the cult, Youre in trouble')
-  await member.send(embed=joinembed)
+async def on_member_join(member, ctx):
+  await ctx.send("Welcome", member.name)
 
 
 # Join Cult
