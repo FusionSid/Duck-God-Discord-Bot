@@ -104,16 +104,24 @@ async def _8ball(ctx, *, question):
 # Duck Roast
 @client.command(aliases=["rm"])
 async def duckroast(ctx):
-  roastchoice1 = db["roastlist2"]
+  roastchoice1 = db["roasts"]
   roastchoice2 = roasts
   roastchoices = roastchoice1 + roastchoice2
   roast = random.choice(roastchoices)
   await ctx.send(roast)
 
 # Add to roast list
+def update_roasts(roast):
+  if "roasts" in db.key():
+    roasts = db["roasts"]
+    roasts.append(roast)
+    db["roasts"] = roasts
+  else:
+    db["roasts"] = roast
+
 @client.command()
 async def addroast(ctx, *, roast):
-  update_roasts(roasts)
+  update_roasts(roast)
   await ctx.send(f'{roast}\nhas been added to list')
 
 
