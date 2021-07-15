@@ -162,6 +162,49 @@ async def beg(ctx):
 
 
 
+# Admin Commands
+
+# List Keys
+@client.command()
+async def listkeys(ctx):
+  if ctx.author.name == "FusionSid":  
+    keys = db.keys()
+    await ctx.send(keys)
+  else:
+    await ctx.send("You dont have permission to use this command")
+
+# Delete Key
+@client.command()
+async def delkey(ctx, *, key): 
+  if ctx.author.name == "FusionSid":
+    dkey = key
+    del db[dkey]
+    await ctx.send("done")
+  else: 
+    await ctx.send("You dont have permission to use this command")
+
+
+# Key value
+@client.command()
+async def keyval(ctx, *, key):
+  if ctx.author.name == "FusionSid":
+    value = db[key]
+    await ctx.send(value)
+  else:
+    await ctx.send("You dont have permission to use this command")
+
+
+# Eat Messages 
+@client.command(aliases=['eatm'])
+async def eatmessage(ctx, ammount : int):
+  if ctx.author.name == "FusionSid":
+    await ctx.channel.purge(limit=ammount)
+    await ctx.send("Yum!")
+  else:
+    await ctx.send("You dont have permission to use this command")
+
+
+
 # Help and Errors
 
 @client.command()
@@ -265,47 +308,11 @@ async def commands(ctx):
   await ctx.send(embed=clembed)
 
 
-# Admin Commands
-
-# List Keys
-@client.command()
-async def listkeys(ctx):
-  if ctx.author.name == "FusionSid":  
-    keys = db.keys()
-    await ctx.send(keys)
-  else:
-    await ctx.send("You dont have permission to use this command")
-
-# Delete Key
-@client.command()
-async def delkey(ctx, *, key): 
-  if ctx.author.name == "FusionSid":
-    dkey = key
-    del db[dkey]
-    await ctx.send("done")
-  else: 
-    await ctx.send("You dont have permission to use this command")
-
-
-# Key value
-@client.command()
-async def keyval(ctx, *, key):
-  if ctx.author.name == "FusionSid":
-    value = db[key]
-    await ctx.send(value)
-  else:
-    await ctx.send("You dont have permission to use this command")
-
-
-# Eat Messages 
-@client.command(aliases=['eatm'])
-async def eatmessage(ctx, ammount : int):
-  if ctx.author.name == "FusionSid":
-    await ctx.channel.purge(limit=ammount)
-    await ctx.send("Yum!")
-  else:
-    await ctx.send("You dont have permission to use this command")
-  
+@client.event()
+async def on_command_error(self, ctx, exc):
+  if isinstance(exc, CommandOnCooldown):
+    em = discord.Embed(title = "Command On Cooldown", description = f'Try again in {exc.retry_after:,.2f}seconds.')
+    await ctx.send(f'That command is on cooldown. Try again in')
 # Run 
 keep_alive()
 client.run(os.environ['Token'])
