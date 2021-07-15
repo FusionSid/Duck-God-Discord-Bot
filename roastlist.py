@@ -1,4 +1,4 @@
-roasts = [
+roastlistpy = [
 "I'd like to roast you, but it looks like God already did.",
 "You look like someone set your face on fire and then put it out with a hammer.",
 "The only thing attracted to you is gravity",

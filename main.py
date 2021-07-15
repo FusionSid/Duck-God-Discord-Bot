@@ -5,7 +5,7 @@ import random
 from keep_alive import keep_alive
 from replit import db
 from googleapiclient.discovery import build
-from roastlist import roasts
+from roastlist import roastlistpy
 
 # Please Don't Ruin This Bot
 
@@ -14,8 +14,6 @@ isapi_key = "AIzaSyCj52wnSciil-4JPd6faOXXHfEb1pzrCuY"
 prefix = '.'
 
 client = commands.Bot(prefix)
-
-commandslist = "__List of Duck Bot Commands__\n\n.jc [@name] = Registers your name in the duck cult member database.\n.lc [index] = Removes your name from the data base (Useless command, no one wants to leave the duck god).\n.dm [user] [message] = Dms user message\n.ducksearch [yoursearch] = searches for an image\n.8ball [question] = uses the magical 8 ball to answers you life questions\n.duckroast = Roast you\n.duckhelp = asks for help\n.lcm = Lists all members of the duck cult (frogs stay away from these people if you wanna live)\n.createacc = creates account in the duck bank\n.beg = Begs for money, has a 60s cooldown.\n.bal = Shows your balance\n\n\nThats all the commands at the moment, When a new command is added it will be added to the list."
 
 
 # Bot is online
@@ -104,25 +102,8 @@ async def _8ball(ctx, *, question):
 # Duck Roast
 @client.command(aliases=["rm"])
 async def duckroast(ctx):
-  roastchoice1 = db["roasts"]
-  roastchoice2 = roasts
-  roastchoices = roastchoice1 + roastchoice2
-  roast = random.choice(roastchoices)
+  roast = random.choice(roastlistpy)
   await ctx.send(roast)
-
-# Add to roast list
-def update_roasts(roast):
-  if "roasts" in db.key():
-    roasts = db["roasts"]
-    roasts.append(roast)
-    db["roasts"] = roasts
-  else:
-    db["roasts"] = roast
-
-@client.command()
-async def addroast(ctx, *, roast):
-  update_roasts(roast)
-  await ctx.send(f'{roast}\nhas been added to list')
 
 
 # Duck search
@@ -147,8 +128,6 @@ async def duckdm(ctx, member:discord.Member, *, message):
   await ctx.channel.purge(limit=1)
   await ctx.send("Sent")
 
-
-# Duck Coin Stuff:
 
 # Duck Coin Create Account
 @client.command()
@@ -190,8 +169,7 @@ async def duckhelp(ctx):
   em = discord.Embed(title = "__**Duck Help**__", description = "use .duckcommandhelp <command> for extended info on command", color = ctx.author.color)
 
   em.add_field(name = "Cult", value = "jc, lc, lcm")
-  em.add_field(name = "Lol", value = "8ball, ducksearch, dm")
-  em.add_field(name = "Roast", value = "duckroast, addroast")
+  em.add_field(name = "Lol", value = "8ball, ducksearch, dm, duckroast")
   em.add_field(name = "Duckcoin", value = "createacc, bal, beg")
   em.add_field(name = "More Help:", value = "Dm FusionSid")
   await ctx.send(embed = em)
@@ -201,8 +179,7 @@ async def duckcommandhelp(ctx):
   em = discord.Embed(title = "__**Duck Help**__", description = "use .duckcommandhelp <command> for extended info on command", color = ctx.author.color)
 
   em.add_field(name = "Cult", value = "jc, lc, lcm")
-  em.add_field(name = "Lol", value = "8ball, ducksearch, dm")
-  em.add_field(name = "Roast", value = "duckroast, addroast")
+  em.add_field(name = "Lol", value = "8ball, ducksearch, dm, duckroast")
   em.add_field(name = "Duckcoin", value = "createacc, bal, beg")
   em.add_field(name = "More Help:", value = "Dm FusionSid")
   await ctx.send(embed = em)
@@ -239,12 +216,6 @@ async def duckroast(ctx):
   await ctx.send(embed=em)
 
 @duckcommandhelp.command()
-async def addroast(ctx):
-  em = discord.Embed(title = "Add Roast", description = "Adds a roast to the list of roasts", color = ctx.author.color)
-  em.add_field(name = "Command", value = ".addroast <roast>")
-  await ctx.send(embed=em)
-
-@duckcommandhelp.command()
 async def ducksearch(ctx):
   em = discord.Embed(title = "Duck Search\nThe Best Command", description = "Searches the web for a image of you choice", color = ctx.author.color)
   em.add_field(name = "Command", value = ".ducksearch <search>")
@@ -277,7 +248,21 @@ async def beg(ctx):
 # Command list
 @client.command(aliases=["commandslist"])
 async def commands(ctx):
-  await ctx.send(commandslist)
+  clembed = discord.Embed(title = "__List of Duck Bot Commands__", desciption = " ")
+  clembed.add_field(name = ".jc", value="Join cult")
+  clembed.add_field(name = ".lc", value="Leave cult")
+  clembed.add_field(name = ".lcm", value="List cult members")
+  clembed.add_field(name = ".dm", value="Duck God send DM")
+  clembed.add_field(name = ".createacc", value="Create Account")
+  clembed.add_field(name = ".bal", value="Balance")
+  clembed.add_field(name = ".beg", value="Beg")
+  clembed.add_field(name = ".8ball", value="8ball")
+  clembed.add_field(name = ".ducksearch", value="Duck Search")
+  clembed.add_field(name = ".duckroast", value="Duck Roast")
+  clembed.add_field(name = "For information about command:", value=".duckcommandhelp <command>")
+  clembed.add_field(name = "Example:", value=".duckcommandhelp duckroast")
+  clembed.add_field(name = "For any help:", value=".duckhelp")
+  await ctx.send(embed=clembed)
 
 
 # Admin Commands
