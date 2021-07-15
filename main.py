@@ -113,7 +113,7 @@ async def duckroast(ctx):
 # Add to roast list
 @client.command()
 async def addroast(ctx, *, roast):
-  db["roastlist2"].append(roast)
+  update_roasts(roasts)
   await ctx.send(f'{roast}\nhas been added to list')
 
 
