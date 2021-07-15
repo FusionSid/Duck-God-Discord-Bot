@@ -104,7 +104,9 @@ async def _8ball(ctx, *, question):
 # Duck Roast
 @client.command(aliases=["rm"])
 async def duckroast(ctx):
-  roastchoices = roasts + db["roastlist2"]
+  roastchoice1 = db["roastlist2"]
+  roastchoice2 = roasts
+  roastchoices = roastchoice1 + roastchoice2
   roast = random.choice(roastchoices)
   await ctx.send(roast)
 
@@ -197,7 +199,7 @@ async def duckcommandhelp(ctx):
   em.add_field(name = "More Help:", value = "Dm FusionSid")
   await ctx.send(embed = em)
 
-  
+
 @duckcommandhelp.command()
 async def jc(ctx):
   em = discord.Embed(title = "Join Cult", description = "Joins the duck cult", color = ctx.author.color)
