@@ -27,9 +27,9 @@ async def on_ready():
 
 # New Member Join
 @client.event
-async def on_member_join(member, ctx):
-  await ctx.send("Welcome", member.name)
-
+async def on_member_join(member):
+  embeddm = discord.Embed(title = "__Welcome Message!__", description = f"Hey there {member.name}, Welcome to the discord server. My name is duck god. You shall worship me or else.\nIf you want to live - Join the duck cult. Command is .jc \nIt wont work here so type it in the server.\n.duckhelp = Help and Command List")
+  await member.send(embed=embeddm)
 
 # Join Cult
 def update_cult_members(member):
@@ -43,7 +43,8 @@ def update_cult_members(member):
 @client.command(aliases=['jc'])
 async def joincult(ctx, dcname : str):
   update_cult_members(dcname)
-  await ctx.send(f'{dcname} has joined the cult')
+  em = discord.Embed(title = f'{dcname} has joined the cult')
+  await ctx.send(embed=em)
 
 
 # Leave Cult
@@ -58,7 +59,8 @@ async def leavecult(ctx, lcname : int):
   members = db["members"]
   leavingmember = members[lcname]
   leave_cult(lcname)
-  await ctx.send(f'{leavingmember} has left the cult')
+  em = discord.Embed(title = f'{leavingmember} has left the cult')
+  await ctx.send(embed=em)
 
 
 # List Cult Members
@@ -98,14 +100,16 @@ async def _8ball(ctx, *, question):
 	"Outlook not so good",
 	"Very doubtful"
   ]
-  await ctx.send(f'__Duck 8 Ball__\n\nQuestion: {question}\nAnswer: {random.choice(_8ballans)}')
+  em = discord.Embed(title="__Duck 8 Ball__", description = f"{question}\nAnswer: {random.choice(_8ballans)}")
+  await ctx.send(embed=em)
 
 
 # Duck Roast
 @client.command(aliases=["rm"])
 async def duckroast(ctx):
   roast = random.choice(roastlistpy)
-  await ctx.send(roast)
+  em = discord.Embed(title = roast)
+  await ctx.send(embed=em)
 
 
 # Duck search
@@ -128,26 +132,28 @@ async def duckdm(ctx, member:discord.Member, *, message):
   embeddm = discord.Embed(title = message)
   await member.send(embed=embeddm)
   await ctx.channel.purge(limit=1)
-  await ctx.send("Sent")
+  await ctx.send("Message Sent!!!")
 
 
 # Duck Coin Create Account
 @client.command()
 async def createacc(ctx):
   if ctx.author.name in db.keys():
-    await ctx.send("You already have an account")
+    em = discord.Embed(title = "You already have an account")
+    await ctx.send(embed=em)
   else:
     db[ctx.author.name] = 0
-    await ctx.send("Account Created!")
+    await ctx.send(embed =discord.Embed(title="Account Created!"))
 
 
 # Balance in duckcoins
 @client.command(aliases=["bal"])
 async def duckbal(ctx):
   if ctx.author.name in db.keys():
-    await ctx.send(f'__**{ctx.author.name}**__\nAccount balance is {db[ctx.author.name]}')
+    em = discord.Embed(title = f'__**{ctx.author.name}**__', description =  f'Account balance is {db[ctx.author.name]}')
+    await ctx.send(embed=em)
   else:
-    await ctx.send("Looks like you don't have an account. To create one: .createacc")
+    await ctx.send(embed = discord.Embed("Looks like you don't have an account. To create one: .createacc"))
 
 
 # Beg
@@ -158,9 +164,10 @@ async def beg(ctx):
     afb = random.randint(1, 100)
     abrn = db[ctx.author.name] + afb
     db[ctx.author.name] = abrn
-    await ctx.send(f'Nice you got given {afb} duckcoins\nYou cant beg for another 60s')
+    em = discord.Embed(title = "Here you little peasant", description = f'You got given {afb} duckcoins')
+    await ctx.send(embed = em)
   else:
-    await ctx.send("Looks like you don't have an account, Where do you think im gonna put the money? To create one: .createacc")
+    await ctx.send(embed=discord.Embed(title = "Looks like you don't have an account, Where do you think im gonna put the money? To create one: .createacc"))
 
 
 
