@@ -309,6 +309,17 @@ python-versions = ">=3.6"
 pyparsing = ">=2.0.2"
 
 [[package]]
+name = "ping3"
+version = "2.9.1"
+description = "A pure python3 version of ICMP ping implementation using raw socket."
+category = "main"
+optional = false
+python-versions = ">=3"
+
+[package.extras]
+dev = ["build", "twine", "pycodestyle"]
+
+[[package]]
 name = "protobuf"
 version = "3.17.3"
 description = "Protocol Buffers"
@@ -481,7 +492,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "e8a77a31a9748ed801aca5bdd96e92073e516666b58350029ea301efa66f4cb0"
+content-hash = "3a8406df5a67de108a3512fb50ee55d4536b55cdfc56b8c281bd70bc0c0236b3"
 
 [metadata.files]
 aiohttp = [
@@ -689,6 +700,10 @@ multidict = [
 packaging = [
     {file = "packaging-21.0-py3-none-any.whl", hash = "sha256:c86254f9220d55e31cc94d69bade760f0847da8000def4dfe1c6b872fd14ff14"},
     {file = "packaging-21.0.tar.gz", hash = "sha256:7dc96269f53a4ccec5c0670940a4281106dd0bb343f47b7471f779df49c2fbe7"},
+]
+ping3 = [
+    {file = "ping3-2.9.1-py3-none-any.whl", hash = "sha256:24b2423201fcde8750e6488f3161cb10020b884dac4ebc48a05023546a1de8b5"},
+    {file = "ping3-2.9.1.tar.gz", hash = "sha256:3ba901987b2814ffb81181549279cc6ac0c98b5101192864f9fd37bd05ad12f6"},
 ]
 protobuf = [
     {file = "protobuf-3.17.3-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:ab6bb0e270c6c58e7ff4345b3a803cc59dbee19ddf77a4719c5b635f1d547aa8"},
