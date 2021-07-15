@@ -6,7 +6,9 @@ from keep_alive import keep_alive
 from replit import db
 from googleapiclient.discovery import build
 from roastlist import roastlistpy
+from discord.ext.commands import (CommandNotFound, MissingRequiredArgument, CommandOnCooldown)
 
+# DUCK Bot is the best bot
 # Please Don't Ruin This Bot
 
 isapi_key = "AIzaSyCj52wnSciil-4JPd6faOXXHfEb1pzrCuY"
@@ -307,12 +309,22 @@ async def commands(ctx):
   clembed.add_field(name = "For any help:", value=".duckhelp")
   await ctx.send(embed=clembed)
 
+# Errors
 
-@client.event()
-async def on_command_error(self, ctx, exc):
-  if isinstance(exc, CommandOnCooldown):
-    em = discord.Embed(title = "Command On Cooldown", description = f'Try again in {exc.retry_after:,.2f}seconds.')
-    await ctx.send(f'That command is on cooldown. Try again in')
+@client.event
+async def on_command_error(ctx, error):
+  if isinstance(error, CommandOnCooldown):
+    em = discord.Embed(title = "Command On Cooldown", description = f'Try again in {error.retry_after:,.2f}seconds.')
+    await ctx.send(embed=em)
+
+  elif isinstance(error, CommandNotFound):
+    em = discord.Embed(title = "Command not found", description = "This command either doesn't exist, or you typed it wrong.\n.commands to see list of commands")
+    await ctx.send(embed=em)
+
+  elif isinstance(error, MissingRequiredArgument):
+    em = discord.Embed(title = "Missing a requred argument", description = "You haven't passed in all arguments")
+    await ctx.send(embed=em)
+
 # Run 
 keep_alive()
 client.run(os.environ['Token'])
