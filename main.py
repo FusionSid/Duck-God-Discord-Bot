@@ -73,16 +73,6 @@ async def list_cult_members(ctx,):
       frikinranvar = frikinranvar + 1
 
 
-# Eat Messages 
-@client.command(aliases=['eatm'])
-async def eatmessage(ctx, ammount : int):
-  if ctx.author.name == "FusionSid":
-    await ctx.channel.purge(limit=ammount)
-    await ctx.send("Yum!")
-  if ctx.author.name != "FusionSid":
-    await ctx.send("You don't have permission to do that")
-
-
 # 8ball
 @client.command(aliases=['8ball'])
 async def _8ball(ctx, *, question):
@@ -114,8 +104,15 @@ async def _8ball(ctx, *, question):
 # Duck Roast
 @client.command(aliases=["rm"])
 async def duckroast(ctx):
-  roast = random.choice(roasts)
+  roastchoices = roasts + db["roastlist2"]
+  roast = random.choice(roastchoices)
   await ctx.send(roast)
+
+# Add to roast list
+@client.command()
+async def addroast(ctx, *, roast):
+  db["roastlist2"].append(roast)
+  await ctx.send(f'{roast}\nhas been added to list')
 
 
 # Duck search
@@ -130,20 +127,6 @@ async def ducksearch(ctx, *, search):
     embed1 = discord.Embed(title=f"Duck Search:({search.title()})")
     embed1.set_image(url=url)
     await ctx.send(embed=embed1)
-
-
-# Feed Duck
-@client.command(aliases=['feed'])
-async def feedduck(ctx):
-  duckpfed = db["hungerbar"]
-  duckfed = duckpfed + 1
-  await ctx.send(f'Thank you for feeding me\nDuck hunger level is{duckfed}/100')
-
-# Duck Hunger
-@client.command(aliases=['hunger'])
-async def checkduchhunger(ctx):
-  hungerlevel = db["hungerbar"]
-  await ctx.send(f'Duck Hunger is at {hungerlevel}/100')
 
 
 # Message User
@@ -187,8 +170,99 @@ async def beg(ctx):
     await ctx.send(f'Nice you got given {afb} duckcoins\nYou cant beg for another 60s')
   else:
     await ctx.send("Looks like you don't have an account, Where do you think im gonna put the money? To create one: .createacc")
-    
 
+
+
+# Help and Errors
+
+@client.command()
+async def duckhelp(ctx):
+  em = discord.Embed(title = "__**Duck Help**__", description = "use .duckcommandhelp <command> for extended info on command", color = ctx.author.color)
+
+  em.add_field(name = "Cult", value = "jc, lc, lcm")
+  em.add_field(name = "Lol", value = "8ball, ducksearch, dm")
+  em.add_field(name = "Roast", value = "duckroast, addroast")
+  em.add_field(name = "Duckcoin", value = "createacc, bal, beg")
+  em.add_field(name = "More Help:", value = "Dm FusionSid")
+  await ctx.send(embed = em)
+
+@client.group(invoke_without_command=True)
+async def duckcommandhelp(ctx):
+  em = discord.Embed(title = "__**Duck Help**__", description = "use .duckcommandhelp <command> for extended info on command", color = ctx.author.color)
+
+  em.add_field(name = "Cult", value = "jc, lc, lcm")
+  em.add_field(name = "Lol", value = "8ball, ducksearch, dm")
+  em.add_field(name = "Roast", value = "duckroast, addroast")
+  em.add_field(name = "Duckcoin", value = "createacc, bal, beg")
+  em.add_field(name = "More Help:", value = "Dm FusionSid")
+  await ctx.send(embed = em)
+
+  
+@duckcommandhelp.command()
+async def jc(ctx):
+  em = discord.Embed(title = "Join Cult", description = "Joins the duck cult", color = ctx.author.color)
+  em.add_field(name = "Command", value = ".jc")
+  await ctx.send(embed=em)
+
+@duckcommandhelp.command()
+async def lc(ctx):
+  em = discord.Embed(title = "Leave Cult", description = "Leaves the duck cult", color = ctx.author.color)
+  em.add_field(name = "Command", value = ".lc <index>\nIndex's start from 0")
+  await ctx.send(embed=em)
+
+@duckcommandhelp.command()
+async def lcm(ctx):
+  em = discord.Embed(title = "List Cult Members", description = "Lists all duck member, Pings them too", color = ctx.author.color)
+  em.add_field(name = "Command", value = ".lcm")
+  await ctx.send(embed=em)
+
+@duckcommandhelp.command(aliases=["8ball"])
+async def _8ball(ctx):
+  em = discord.Embed(title = "8 Ball", description = "Asks the magical 8 ball a question", color = ctx.author.color)
+  em.add_field(name = "Command", value = ".8ball <question>")
+  await ctx.send(embed=em)
+
+@duckcommandhelp.command()
+async def duckroast(ctx):
+  em = discord.Embed(title = "Duck Roast", description = "Duck god roasts you", color = ctx.author.color)
+  em.add_field(name = "Command", value = ".duckroast")
+  await ctx.send(embed=em)
+
+@duckcommandhelp.command()
+async def addroast(ctx):
+  em = discord.Embed(title = "Add Roast", description = "Adds a roast to the list of roasts", color = ctx.author.color)
+  em.add_field(name = "Command", value = ".addroast <roast>")
+  await ctx.send(embed=em)
+
+@duckcommandhelp.command()
+async def ducksearch(ctx):
+  em = discord.Embed(title = "Duck Search\nThe Best Command", description = "Searches the web for a image of you choice", color = ctx.author.color)
+  em.add_field(name = "Command", value = ".ducksearch <search>")
+  await ctx.send(embed=em)
+
+@duckcommandhelp.command()
+async def bal(ctx):
+  em = discord.Embed(title = "Duck Balance", description = "Displays you duckcoin bank balance", color = ctx.author.color)
+  em.add_field(name = "Command", value = ".bal")
+  await ctx.send(embed=em)
+
+@duckcommandhelp.command()
+async def dm(ctx):
+  em = discord.Embed(title = "Duck DM", description = "Duck god DMs user of your choice", color = ctx.author.color)
+  em.add_field(name = "Command", value = ".dm <@user> <message>")
+  await ctx.send(embed=em)
+
+@duckcommandhelp.command()
+async def createacc(ctx):
+  em = discord.Embed(title = "Create Account", description = "Creates you a duck bank account", color = ctx.author.color)
+  em.add_field(name = "Command", value = ".createacc")
+  await ctx.send(embed=em)
+
+@duckcommandhelp.command()
+async def beg(ctx):
+  em = discord.Embed(title = "Beg", description = "Begs for duckcoins", color = ctx.author.color)
+  em.add_field(name = "Command", value = ".beg")
+  await ctx.send(embed=em)
 
 # Command list
 @client.command(aliases=["commandslist"])
@@ -196,19 +270,47 @@ async def commands(ctx):
   await ctx.send(commandslist)
 
 
-# .Help
+# Admin Commands
+
+# List Keys
 @client.command()
-async def duckhelp(ctx):
-  await ctx.send("__Duck Bot Help__\n\nIf you need help DM FusionSid,\n\nIf you need a list of commands: .commands or .commandslist")
+async def listkeys(ctx):
+  if ctx.author.name == "FusionSid":  
+    keys = db.keys()
+    await ctx.send(keys)
+  else:
+    await ctx.send("You dont have permission to use this command")
+
+# Delete Key
+@client.command()
+async def delkey(ctx, *, key): 
+  if ctx.author.name == "FusionSid":
+    dkey = key
+    del db[dkey]
+    await ctx.send("done")
+  else: 
+    await ctx.send("You dont have permission to use this command")
 
 
-# Errors
-@client.event
-async def on_command_error(ctx, error):
-  insultswrongcmd = ["Are you dumb?", "U retarted?", "Do me a favour and go get a brain cause you clearly dont have one", "Retard", "You fool", "Ducking Hell", "Duck You"]
-  print(f'{random.choice(insultswrongcmd)}\nBecause of you little ducker, Ive encountered an error')
+# Key value
+@client.command()
+async def keyval(ctx, *, key):
+  if ctx.author.name == "FusionSid":
+    value = db[key]
+    await ctx.send(value)
+  else:
+    await ctx.send("You dont have permission to use this command")
 
 
+# Eat Messages 
+@client.command(aliases=['eatm'])
+async def eatmessage(ctx, ammount : int):
+  if ctx.author.name == "FusionSid":
+    await ctx.channel.purge(limit=ammount)
+    await ctx.send("Yum!")
+  else:
+    await ctx.send("You dont have permission to use this command")
+  
 # Run 
 keep_alive()
 client.run(os.environ['Token'])
