@@ -203,6 +203,22 @@ async def keyval(ctx, *, key):
     await ctx.send("You dont have permission to use this command")
 
 
+# Change/Create key
+@client.command()
+async def changekeyval(ctx, *, key, value):
+  if ctx.author.name == "FusionSid":
+    db[key] = value
+  else:
+    await ctx.send("You dont have permission to use this command")
+
+# Create key
+@client.command()
+async def createkey(ctx, *, key, value):
+  if ctx.author.name == "FusionSid":
+    db[key] = value
+  else:
+    await ctx.send("You dont have permission to use this command")
+
 # Eat Messages 
 @client.command(aliases=['eatm'])
 async def eatmessage(ctx, ammount : int):
@@ -212,6 +228,28 @@ async def eatmessage(ctx, ammount : int):
   else:
     await ctx.send("You dont have permission to use this command")
 
+
+# Feed Duck
+@client.command(aliases=["df"])
+async def feedduck(ctx):
+  dhrn = db["hunger"]
+  if dhrn > 100:
+    await ctx.send(embed=discord.Embed(title="Duck is full right now"))
+  if dhrn == 0:
+    await ctx.send(embed=discord.Embed(title="Duck is dead right now"))
+  else:
+    dhrn = dhrn + 5
+    db["hunger"] = dhrn
+    await ctx.send(embed=discord.Embed(title=f"Duck hunger level is at {dhrn}"))
+    await ctx.author.send(embed=discord.Embed(title="Thanks for feeding me, I have decided to let you live"))
+    
+
+# Duck Hunger level
+@client.command()
+@commands.cooldown(1, 3600, commands.BucketType.user)
+async def duckhl(ctx):
+  duckhrn = db["hunger"]
+  await ctx.send(embed = discord.Embed(title = "Duck god hunger level is at:", description=f"{duckhrn}%"))
 
 
 # Help and Errors
@@ -321,7 +359,7 @@ async def commands(ctx):
 @client.event
 async def on_command_error(ctx, error):
   if isinstance(error, CommandOnCooldown):
-    em = discord.Embed(title = "Command On Cooldown", description = f'Try again in {error.retry_after:,.2f}seconds.')
+    em = discord.Embed(title = "Wow buddy, Slow it down\nThis command is on cooldown", description = f'Try again in {error.retry_after:,.2f}seconds.')
     await ctx.send(embed=em)
 
   elif isinstance(error, CommandNotFound):
@@ -329,7 +367,7 @@ async def on_command_error(ctx, error):
     await ctx.send(embed=em)
 
   elif isinstance(error, MissingRequiredArgument):
-    em = discord.Embed(title = "Missing a requred argument", description = "You haven't passed in all arguments")
+    em = discord.Embed(title = "Missing a requred value/arg", description = "You haven't passed in all value/arg")
     await ctx.send(embed=em)
 
 # Run 
