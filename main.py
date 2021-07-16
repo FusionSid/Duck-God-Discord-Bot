@@ -13,19 +13,15 @@ from roastlist import roastlistpy
 from discord.ext.commands import (CommandNotFound, MissingRequiredArgument, CommandOnCooldown)
 import asyncio
 from discord.ext import tasks
-import music
-
-cogs = [music]
-for i in range(len(cogs)):
-  cogs[i].setup()
+import youtube_dl
 
 # Api key for image search
 isapi_key = "AIzaSyCj52wnSciil-4JPd6faOXXHfEb1pzrCuY"
 
 #Prefix
 prefix = '.'
-client = commands.Bot(prefix, help_command=None, intents = discord.Intents.all())
-
+client = commands.Bot(prefix, help_command=None)
+intents = discord.Intents.all()
 
 # Events
 
@@ -42,7 +38,6 @@ async def on_member_join(member):
   await member.send(embed=embeddm)
 
 # Client Commands
-
 
 # Cult Commands
 
@@ -169,7 +164,8 @@ async def feedback(ctx, member="FusionSid", *, message):
 
 # Music bot
 
-
+from music_cog import music_cog
+client.add_cog(music_cog(client))
 
 # Duck economy stuff
 
@@ -257,8 +253,9 @@ async def duckcommandhelp(ctx):
   em = discord.Embed(title = "__**Duck Help**__", description = "use .help <command> for extended info on command", color = ctx.author.color)
 
   em.add_field(name = "Cult", value = "jc, lc, lcm")
-  em.add_field(name = "Lol", value = "8ball, ducksearch, dm")
+  em.add_field(name = "Fun", value = "8ball, ducksearch, dm")
   em.add_field(name = "Roast", value = "duckroast, sendroast")
+  em.add_field(name = "Music", value = "play, skip, queue")
   em.add_field(name = "Duckcoin", value = "createacc, bal, beg")
   em.add_field(name = "More Help:", value = "Dm FusionSid")
   await ctx.send(embed = em)
@@ -268,6 +265,24 @@ async def duckcommandhelp(ctx):
 async def jc(ctx):
   em = discord.Embed(title = "Join Cult", description = "Joins the duck cult", color = ctx.author.color)
   em.add_field(name = "Command", value = ".jc <@name>")
+  await ctx.send(embed=em)
+
+@duckcommandhelp.command()
+async def skip(ctx):
+  em = discord.Embed(title = "Skip Song", description = "Skips the song currently playing", color = ctx.author.color)
+  em.add_field(name = "Command", value = ".skip")
+  await ctx.send(embed=em)
+
+@duckcommandhelp.command()
+async def play(ctx):
+  em = discord.Embed(title = "Play song", description = "Joins the duck cult", color = ctx.author.color)
+  em.add_field(name = "Command", value = ".play <song name>")
+  await ctx.send(embed=em)
+
+@duckcommandhelp.command()
+async def queue(ctx):
+  em = discord.Embed(title = "List Queue", description = "Lists all the songs in the queue", color = ctx.author.color)
+  em.add_field(name = "Command", value = ".q")
   await ctx.send(embed=em)
 
 @duckcommandhelp.command()
@@ -345,6 +360,9 @@ async def commands(ctx):
   clembed.add_field(name = "\n__.ducksearch__", value="Duck Search")
   clembed.add_field(name = "\n__.duckroast__", value="Duck Roast")
   clembed.add_field(name = "\n__.sendroast__", value="Send Roast")
+  clembed.add_field(name = "\n__.queue__", value="Queue")
+  clembed.add_field(name = "\n__.play__", value="Play Song")
+  clembed.add_field(name = "\n__.skip__", value="Skip Song")
   clembed.add_field(name = "\nFor information about command:", value=".help <commandname(without . prefix)>\n")
   clembed.add_field(name = "Example(for help about the duckroast command):", value=".help duckroast")
   clembed.add_field(name = "For any help:", value=".help")
