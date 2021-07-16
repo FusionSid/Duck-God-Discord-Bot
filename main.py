@@ -1,3 +1,7 @@
+# Imports
+# Duck Bot is the best bot
+# Please Don't Ruin This Bot
+
 import os
 import discord
 from discord.ext import commands
@@ -7,29 +11,35 @@ from replit import db
 from googleapiclient.discovery import build
 from roastlist import roastlistpy
 from discord.ext.commands import (CommandNotFound, MissingRequiredArgument, CommandOnCooldown)
+import asyncio
+from discord.ext import tasks
 
-# DUCK Bot is the best bot
-# Please Don't Ruin This Bot
-
+# Api key for image search
 isapi_key = "AIzaSyCj52wnSciil-4JPd6faOXXHfEb1pzrCuY"
 
+#Prefix
 prefix = '.'
-
 client = commands.Bot(prefix, help_command=None)
 
 
-# Bot is online
+# Events
+
+# When bot is online change status and print
 @client.event
 async def on_ready():
   await client.change_presence(activity=discord.Game("Hunting Frogs"))
-  print("A wild duck god has spawned\n\nDuck god is ready to eat")
-
+  print("A wild duck god has spawned")
 
 # New Member Join
 @client.event
 async def on_member_join(member):
   embeddm = discord.Embed(title = "__Welcome Message!__", description = f"Hey there {member.name}, Welcome to the discord server. My name is duck god. You shall worship me or else.\nIf you want to live - Join the duck cult. Command is .jc \nIt wont work here so type it in the server.\n.help = Help and Command List")
   await member.send(embed=embeddm)
+
+# Client Commands
+
+
+# Cult Commands
 
 # Join Cult
 def update_cult_members(member):
@@ -46,7 +56,6 @@ async def joincult(ctx, dcname : str):
   em = discord.Embed(title = f'{dcname} has joined the cult')
   await ctx.send(embed=em)
 
-
 # Leave Cult
 def leave_cult(index):
   members = db["members"]
@@ -62,7 +71,6 @@ async def leavecult(ctx, lcname : int):
   em = discord.Embed(title = f'{leavingmember} has left the cult')
   await ctx.send(embed=em)
 
-
 # List Cult Members
 @client.command(aliases=['lcm'])
 async def list_cult_members(ctx,):
@@ -74,6 +82,8 @@ async def list_cult_members(ctx,):
       await ctx.send(dcm[frikinranvar])
       frikinranvar = frikinranvar + 1
 
+
+# Fun commands
 
 # 8ball
 @client.command(aliases=['8ball'])
@@ -103,15 +113,6 @@ async def _8ball(ctx, *, question):
   em = discord.Embed(title="__Duck 8 Ball__", description = f"{question}\nAnswer: {random.choice(_8ballans)}")
   await ctx.send(embed=em)
 
-
-# Duck Roast
-@client.command(aliases=["rm"])
-async def duckroast(ctx):
-  roast = random.choice(roastlistpy)
-  em = discord.Embed(title = roast)
-  await ctx.send(embed=em)
-
-
 # Duck search
 @client.command(aliases=["ds"])
 async def ducksearch(ctx, *, search):
@@ -125,6 +126,7 @@ async def ducksearch(ctx, *, search):
     embed1.set_image(url=url)
     await ctx.send(embed=embed1)
 
+# Sending Messages
 
 # Message User
 @client.command(aliases=["dm"])
@@ -134,8 +136,14 @@ async def duckdm(ctx, member:discord.Member, *, message):
   await ctx.channel.purge(limit=1)
   await ctx.send("Message Sent!!!")
 
+# Duck Roast
+@client.command(aliases=["rm"])
+async def duckroast(ctx):
+  roast = random.choice(roastlistpy)
+  em = discord.Embed(title = roast)
+  await ctx.send(embed=em)
 
-# send roastlistpy
+# Send Roast 
 @client.command(aliases=["sr"])
 async def sendroast(ctx, member:discord.Member):
   message = random.choice(roastlistpy)
@@ -144,6 +152,37 @@ async def sendroast(ctx, member:discord.Member):
   await member.send(embed=embeddm)
   await ctx.channel.purge(limit=1)
   await ctx.send("Roast Sent")
+
+# Feedback
+@client.command(aliases=["fb"])
+async def feedback(ctx, member="FusionSid", *, message):
+  embeddm = discord.Embed(title = message)
+  await member.send(embed=embeddm)
+  await ctx.channel.purge(limit=1)
+  await ctx.send("Feedback Sent")
+
+# Feed
+
+@client.command(aliases=["df"])
+@commands.cooldown(1, 3600, commands.BucketType.user)
+async def feed(ctx):
+  author = ctx.author.name
+  if author in db.keys():
+    authorbal = db[author]
+    if authorbal < 300:
+      await ctx.send("You dont have enough money to feed duck, you need 300 duckcoin")
+    elif authorbal >= 300:
+      balrn = db[ctx.author.name] - 300
+      
+  else:
+    await ctx.send("Looks like you dont have a bank account")
+  
+
+# Music bot
+
+
+
+# Duck economy stuff
 
 # Duck Coin Create Account
 @client.command()
@@ -155,7 +194,6 @@ async def createacc(ctx):
     db[ctx.author.name] = 0
     await ctx.send(embed =discord.Embed(title="Account Created!"))
 
-
 # Balance in duckcoins
 @client.command(aliases=["bal"])
 async def duckbal(ctx):
@@ -165,8 +203,7 @@ async def duckbal(ctx):
   else:
     await ctx.send(embed = discord.Embed("Looks like you don't have an account. To create one: .createacc"))
 
-
-# Beg
+# Beg for coins
 @client.command()
 @commands.cooldown(1, 60, commands.BucketType.user)
 async def beg(ctx):
@@ -224,7 +261,7 @@ async def eatmessage(ctx, ammount : int):
 
 
 
-# Help and Errors
+# Help and command list
 
 @client.group(invoke_without_command=True, aliases=["duckhelp", "help"])
 async def duckcommandhelp(ctx):
@@ -324,6 +361,7 @@ async def commands(ctx):
   clembed.add_field(name = "For any help:", value=".help")
   await ctx.send(embed=clembed)
 
+
 # Errors
 
 @client.event
@@ -341,6 +379,19 @@ async def on_command_error(ctx, error):
     await ctx.send(embed=em)
 
 
+# Background Tasks
+
+# Duck lower hunger
+async def lowerhunger():
+  hungerrn = db["hunger"]
+  await client.wait_until_ready()
+  while hungerrn > 0:
+    hungerrn = hungerrn - 1
+    db["hunger"] = hungerrn
+    await aysncio.sleep(3600)
+
+
 # Run 
+client.loop.create_task(lowerhunger())
 keep_alive()
 client.run(os.environ['Token'])
