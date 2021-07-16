@@ -13,13 +13,18 @@ from roastlist import roastlistpy
 from discord.ext.commands import (CommandNotFound, MissingRequiredArgument, CommandOnCooldown)
 import asyncio
 from discord.ext import tasks
+import music
+
+cogs = [music]
+for i in range(len(cogs)):
+  cogs[i].setup()
 
 # Api key for image search
 isapi_key = "AIzaSyCj52wnSciil-4JPd6faOXXHfEb1pzrCuY"
 
 #Prefix
 prefix = '.'
-client = commands.Bot(prefix, help_command=None)
+client = commands.Bot(prefix, help_command=None, intents = discord.Intents.all())
 
 
 # Events
@@ -161,22 +166,6 @@ async def feedback(ctx, member="FusionSid", *, message):
   await ctx.channel.purge(limit=1)
   await ctx.send("Feedback Sent")
 
-# Feed
-
-@client.command(aliases=["df"])
-@commands.cooldown(1, 3600, commands.BucketType.user)
-async def feed(ctx):
-  author = ctx.author.name
-  if author in db.keys():
-    authorbal = db[author]
-    if authorbal < 300:
-      await ctx.send("You dont have enough money to feed duck, you need 300 duckcoin")
-    elif authorbal >= 300:
-      balrn = db[ctx.author.name] - 300
-      
-  else:
-    await ctx.send("Looks like you dont have a bank account")
-  
 
 # Music bot
 
@@ -379,19 +368,7 @@ async def on_command_error(ctx, error):
     await ctx.send(embed=em)
 
 
-# Background Tasks
-
-# Duck lower hunger
-async def lowerhunger():
-  hungerrn = db["hunger"]
-  await client.wait_until_ready()
-  while hungerrn > 0:
-    hungerrn = hungerrn - 1
-    db["hunger"] = hungerrn
-    await aysncio.sleep(3600)
-
-
 # Run 
-client.loop.create_task(lowerhunger())
+
 keep_alive()
 client.run(os.environ['Token'])
