@@ -430,9 +430,6 @@ async def on_command_error(ctx, error):
     em = discord.Embed(title = "Missing a requred value/arg", description = "You haven't passed in all value/arg")
     await ctx.send(embed=em)
   
-  elif isinstance
-
-
 # Run
 
 keep_alive()
