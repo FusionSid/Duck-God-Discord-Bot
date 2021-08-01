@@ -60,21 +60,6 @@ async def joincult(ctx, dcname : str):
   em = discord.Embed(title = f'{dcname} has joined the cult')
   await ctx.send(embed=em)
 
-# Leave Cult
-def leave_cult(index):
-  members = db["members"]
-  if len(members) >= index:
-    del members[index]
-    db["members"] = members
-
-@client.command(aliases=['lc'])
-async def leavecult(ctx, lcname : int):
-  members = db["members"]
-  leavingmember = members[lcname]
-  leave_cult(lcname)
-  em = discord.Embed(title = f'{leavingmember} has left the cult')
-  await ctx.send(embed=em)
-
 # List Cult Members
 @client.command(aliases=['lcm'])
 async def list_cult_members(ctx,):
@@ -273,6 +258,21 @@ async def eatmessage(ctx, ammount : int):
   await ctx.channel.purge(limit=ammount)
   await ctx.send("Yum!")
 
+# Leave Cult
+def leave_cult(index):
+  members = db["members"]
+  if len(members) >= index:
+    del members[index]
+    db["members"] = members
+
+@client.command(aliases=['rcm'])
+@commands.check(is_it_me)
+async def removecm(ctx, lcname : int):
+  members = db["members"]
+  leavingmember = members[lcname]
+  leave_cult(lcname)
+  em = discord.Embed(title = f'{leavingmember} has left the cult')
+  await ctx.send(embed=em)
 
 
 # Help and Command list
