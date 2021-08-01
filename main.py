@@ -237,31 +237,25 @@ async def dkey(ctx, *, key):
   dkey = key
   del db[dkey]
   await ctx.send("done")
-  await ctx.send("You dont have permission to use this command")
 
 # Key value
 @client.command()
 @commands.check(is_it_me)
 async def val(ctx, *, key):
-  if ctx.author.name == "FusionSid":
-    value = db[key]
-    await ctx.send(value)
-  else:
-    await ctx.send("You dont have permission to use this command")
+  value = db[key]
+  await ctx.send(value)
 
 # Say stuff
 @client.command(aliases=["s"])
 @commands.check(is_it_me)
-async def say(ctx, em, message):
+async def say(ctx, em : str, message):
   await ctx.channel.purge(limit=1)
-  if em == 'yt':
-    await ctx.send(embed=discord.Embed(title=message)
-  if em == 'yd':
-    await ctx.send(embed=discord.Embed(description=message)
-  elif em == 'n':
+  if em == "yt":
+    await ctx.send(embed=discord.Embed(title=message))
+  if em == "yd":
+    await ctx.send(embed=discord.Embed(description=message))
+  if em == "n":
     await ctx.send(message)
-  else:
-    await ctx.send("You have to specify if its embed or not")
 
 
 # Eat Messages 
