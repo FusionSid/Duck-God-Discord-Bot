@@ -217,12 +217,31 @@ async def beg(ctx):
   else:
     await ctx.send(embed=discord.Embed(title = "Looks like you don't have an account, Where do you think im gonna put the money? To create one: .createacc"))
 
+@client.command()
+async def rob(ctx, member : discord.Member):
+  s = random.randint(0, 1)
+  a = random.randint(10, 100)
+  p = member
+  pb = db[p]
+  yb = db[ctx.author.name]
+  y = ctx.author.name
+  if db[p] in db.keys():
+    if s == 0:
+      db[p] = pb - a
+      db[y] = yb + a
+      await ctx.send(f"You stole {a} duckcoin from {p}")
+    if s == 1:
+      db[y] = yb - a
+      db[p] = pb + a
+      await ctx.send(f"We'll get em next time\nYou paid {p}, {a} duckcoin")
+  else:
+    await ctx.send("Dude they dont even have a bank account")
 
 # Admin Commands
 
 def is_it_me(ctx):
   return ctx.author.id == 624076054969188363
-
+  
 # List Keys
 @client.command()
 @commands.check(is_it_me)
@@ -248,7 +267,7 @@ async def val(ctx, *, key):
 # Say stuff
 @client.command(aliases=["s"])
 @commands.check(is_it_me)
-async def say(ctx, em : str, message):
+async def say(ctx, em : str, *, message):
   await ctx.channel.purge(limit=1)
   if em == "yt":
     await ctx.send(embed=discord.Embed(title=message))
@@ -256,7 +275,6 @@ async def say(ctx, em : str, message):
     await ctx.send(embed=discord.Embed(description=message))
   if em == "n":
     await ctx.send(message)
-
 
 # Eat Messages 
 @client.command(aliases=['eatm'])
