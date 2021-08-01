@@ -158,17 +158,15 @@ async def duckdm(ctx, member:discord.Member, *, message):
   embeddm = discord.Embed(title = message)
   await member.send(embed=embeddm)
   await ctx.channel.purge(limit=1)
-  await ctx.send("Message Sent!!!")
 
 # Send Roast 
 @client.command(aliases=["sr"])
 async def sendroast(ctx, member:discord.Member):
   message = random.choice(roastlistpy)
   author = ctx.author.name
-  embeddm = discord.Embed(title = message, description = f"Sent by: {author}")
+  embeddm = discord.Embed(title = message, description = "Imagine being roasted by a ducking bot")
   await member.send(embed=embeddm)
   await ctx.channel.purge(limit=1)
-  await ctx.send("Roast Sent")
 
 # Feedback
 @client.command(aliases=["fb"])
@@ -228,14 +226,14 @@ def is_it_me(ctx):
 # List Keys
 @client.command()
 @commands.check(is_it_me)
-async def listkeys(ctx):
+async def lkey(ctx):
   keys = db.keys()
   await ctx.send(keys)
 
 # Delete Key
 @client.command()
 @commands.check(is_it_me)
-async def delkey(ctx, *, key): 
+async def dkey(ctx, *, key): 
   dkey = key
   del db[dkey]
   await ctx.send("done")
@@ -244,19 +242,33 @@ async def delkey(ctx, *, key):
 # Key value
 @client.command()
 @commands.check(is_it_me)
-async def keyval(ctx, *, key):
+async def val(ctx, *, key):
   if ctx.author.name == "FusionSid":
     value = db[key]
     await ctx.send(value)
   else:
     await ctx.send("You dont have permission to use this command")
 
+# Say stuff
+@client.command(aliases=["s"])
+@commands.check(is_it_me)
+async def say(ctx, em, message):
+  await ctx.channel.purge(limit=1)
+  if em == 'yt':
+    await ctx.send(embed=discord.Embed(title=message)
+  if em == 'yd':
+    await ctx.send(embed=discord.Embed(description=message)
+  elif em == 'n':
+    await ctx.send(message)
+  else:
+    await ctx.send("You have to specify if its embed or not")
+
+
 # Eat Messages 
 @client.command(aliases=['eatm'])
 @commands.check(is_it_me)
 async def eatmessage(ctx, ammount : int):
   await ctx.channel.purge(limit=ammount)
-  await ctx.send("Yum!")
 
 # Leave Cult
 def leave_cult(index):
