@@ -14,6 +14,7 @@ from discord.ext.commands import (CommandNotFound, MissingRequiredArgument, Comm
 import asyncio
 from discord.ext import tasks
 import youtube_dl
+import randfacts
 
 # Api key for image search
 isapi_key = "AIzaSyCj52wnSciil-4JPd6faOXXHfEb1pzrCuY"
@@ -73,6 +74,14 @@ async def list_cult_members(ctx,):
 
 
 # Fun/Question commands:
+
+# Random randfacts
+
+@client.command()
+async def fact(ctx, ammount:int=1):
+  for i in range(ammount):
+    fact = randfacts.get_fact()
+    await ctx.send(embed=discord.Embed(title='Random Fact', description=fact))
 
 # Counting
 @client.command()
@@ -218,13 +227,19 @@ async def beg(ctx):
     await ctx.send(embed=discord.Embed(title = "Looks like you don't have an account, Where do you think im gonna put the money? To create one: .createacc"))
 
 @client.command()
-async def rob(ctx, member : discord.Member):
-  s = random.randint(0, 1)
-  a = random.randint(10, 100)
+async def rob(ctx, *, member : discord.Member):
+  s = random.randint(0, 1) # 1 or 2
+  a = random.randint(10, 100) # 10 - 100
   p = member
-  pb = db[p]
-  yb = db[ctx.author.name]
   y = ctx.author.name
+  try:
+    pb = db[p]
+  except:
+    ctx.send("Dude they dont even have a bank account")
+  try:
+    yb = db[ctx.author.name]
+  except:
+    ctx.send("Dude you dont even have a bank account")
   if db[p] in db.keys():
     if s == 0:
       db[p] = pb - a
@@ -237,33 +252,56 @@ async def rob(ctx, member : discord.Member):
   else:
     await ctx.send("Dude they dont even have a bank account")
 
+
 # Admin Commands
 
 def is_it_me(ctx):
   return ctx.author.id == 624076054969188363
-  
+
 # List Keys
-@client.command()
+@client.command(aliases=['listkeys', 'keylist', 'klist', 'kl'])
 @commands.check(is_it_me)
-async def lkey(ctx):
+async def listk(ctx):
+  await ctx.channel.purge(limit=1)
   keys = db.keys()
-  await ctx.send(keys)
+  await ctx.send(keys, delete_after=10)
 
 # Delete Key
-@client.command()
+@client.command(aliases=['deletekey', 'dk', 'keydel'])
 @commands.check(is_it_me)
-async def dkey(ctx, *, key): 
+async def delk(ctx, *, key):
+  await ctx.channel.purge(limit=1)
   dkey = key
   del db[dkey]
-  await ctx.send("done")
+  await ctx.send("done", delete_after=10)
 
 # Key value
+@client.command(aliases=['keyval', 'valkey', 'keyv', 'kv'])
+@commands.check(is_it_me)
+async def kval(ctx, *, key):
+  await ctx.channel.purge(limit=1)
+  value = db[key]
+  await ctx.send(value, delete_after=10)
+
+# Change Key Value
+@client.command(aliases=['changekv', 'ckv'])
+@commands.check(is_it_me)
+async def ckval(ctx, key, *, val:int):
+  await ctx.channel.purge(limit=1)
+  db[key] = val
+  print(val)
+  await ctx.send(f"{key} has been changed to {val}", delete_after=10)
+
+# Key info    
 @client.command()
 @commands.check(is_it_me)
-async def val(ctx, *, key):
-  value = db[key]
-  await ctx.send(value)
-
+async def keyhelp(ctx):
+  em = discord.Embed(
+    title="__Admin Key Commands__\n.dk, .ckv, .kv, kl",
+    description="Delete Key: .dk <key>\nKey list: .kl\nChange Key Value: .kv <key> <value>\n"
+    )
+  member = ctx.author.name
+  await member.send(embed=em)
 # Say stuff
 @client.command(aliases=["s"])
 @commands.check(is_it_me)
@@ -277,7 +315,7 @@ async def say(ctx, em : str, *, message):
     await ctx.send(message)
 
 # Eat Messages 
-@client.command(aliases=['eatm'])
+@client.command(aliases=['eatm', 'clear', 'del'])
 @commands.check(is_it_me)
 async def eatmessage(ctx, ammount : int):
   await ctx.channel.purge(limit=ammount)
@@ -295,7 +333,7 @@ async def removecm(ctx, lcname : int):
   members = db["members"]
   leavingmember = members[lcname]
   leave_cult(lcname)
-  em = discord.Embed(title = f'{leavingmember} has left the cult')
+  em = discord.Embed(title = f'{leavingmember} has been removed from the cult')
   await ctx.send(embed=em)
 
 
@@ -306,7 +344,7 @@ async def duckcommandhelp(ctx):
   em = discord.Embed(title = "__**Duck Help**__", description = "use .help <command> for extended info on command", color = ctx.author.color)
 
   em.add_field(name = "__Cult__", value = "jc, lc, lcm")
-  em.add_field(name = "__Fun/Questions__", value = "8ball, ducksearch, calc, duckroast, c")
+  em.add_field(name = "__Fun/Questions__", value = "8ball, ducksearch, calc, duckroast, c, fact")
   em.add_field(name = "__Message__", value = "feedback, ducksearch, dm, sendroast")
   em.add_field(name = "__Music__", value = "play, skip, queue")
   em.add_field(name = "__Duckcoin__", value = "createacc, bal, beg")
@@ -331,6 +369,7 @@ async def commands(ctx):
   clembed.add_field(name = "\n__.queue__", value="Queue")
   clembed.add_field(name = "\n__.play__", value="Play Song")
   clembed.add_field(name = "\n__.skip__", value="Skip Song")
+  clembed.add_field(name = "\n__.fact__", value="Random Fact")
   clembed.add_field(name = "\n__.c__", value="Counting - only do in counting channel")
   clembed.add_field(name = "\n__.calc__", value="Calculate.")
   clembed.add_field(name = "\nFor information about command:", value=".help <commandname(without . prefix)>\n")
@@ -338,13 +377,18 @@ async def commands(ctx):
   clembed.add_field(name = "For any help:", value=".help")
   await ctx.send(embed=clembed)
 
-
 # Custom Help per command
 
 @duckcommandhelp.command()
 async def jc(ctx):
   em = discord.Embed(title = "Join Cult", description = "Joins the duck cult", color = ctx.author.color)
   em.add_field(name = "Command", value = ".jc <@name>")
+  await ctx.send(embed=em)
+
+@duckcommandhelp.command()
+async def fact(ctx):
+  em = discord.Embed(title = "Fact", description = "Tells a random fact", color = ctx.author.color)
+  em.add_field(name = "Command", value = ".fact")
   await ctx.send(embed=em)
 
 @duckcommandhelp.command()
@@ -441,7 +485,8 @@ async def calc(ctx):
 # Errors
 
 @client.event
-async def on_command_error(ctx, error): 
+async def on_command_error(ctx, error):
+  er = error
   if isinstance(error, CommandOnCooldown):
     em = discord.Embed(title = "Wow buddy, Slow it down\nThis command is on cooldown", description = f'Try again in {error.retry_after:,.2f}seconds.') 
     await ctx.send(embed=em)
@@ -453,7 +498,13 @@ async def on_command_error(ctx, error):
   elif isinstance(error, MissingRequiredArgument):
     em = discord.Embed(title = "Missing a requred value/arg", description = "You haven't passed in all value/arg")
     await ctx.send(embed=em)
-  
+
+  else:
+    print("An error has occured")
+    errsee = input("Wanna see error? y/n ")
+    if errsee.lower() == 'y':
+      print(er)
+
 # Run
 
 keep_alive()
