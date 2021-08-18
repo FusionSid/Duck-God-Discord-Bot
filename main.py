@@ -14,7 +14,6 @@ from discord.ext.commands import (CommandNotFound, MissingRequiredArgument, Comm
 import asyncio
 from discord.ext import tasks
 import youtube_dl
-import randfacts
 
 # Api key for image search
 isapi_key = "AIzaSyCj52wnSciil-4JPd6faOXXHfEb1pzrCuY"
@@ -77,11 +76,11 @@ async def list_cult_members(ctx,):
 
 # Random randfacts
 
-@client.command()
-async def fact(ctx, ammount:int=1):
-  for i in range(ammount):
-    fact = randfacts.get_fact()
-    await ctx.send(embed=discord.Embed(title='Random Fact', description=fact))
+#@client.command()
+#async def fact(ctx, ammount:int=1):
+#  for i in range(ammount):
+#    fact = randfacts.get_fact()
+#    await ctx.send(embed=discord.Embed(title='Random Fact', description=fact))
 
 # Counting
 @client.command()
