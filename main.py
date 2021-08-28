@@ -43,6 +43,7 @@ async def on_member_join(member):
 # Client Commands
 
 
+
 # Cult Commands:
 
 # Join Cult
@@ -73,14 +74,6 @@ async def list_cult_members(ctx,):
 
 
 # Fun/Question commands:
-
-# Random randfacts
-
-#@client.command()
-#async def fact(ctx, ammount:int=1):
-#  for i in range(ammount):
-#    fact = randfacts.get_fact()
-#    await ctx.send(embed=discord.Embed(title='Random Fact', description=fact))
 
 # Counting
 @client.command()
@@ -218,39 +211,13 @@ async def duckbal(ctx):
 async def beg(ctx):
   if ctx.author.name in db.keys():
     afb = random.randint(1, 100)
-    abrn = db[ctx.author.name] + afb
+    balrn = int(db[ctx.author.name])
+    abrn = balrn + afb
     db[ctx.author.name] = abrn
     em = discord.Embed(title = "Here you little peasant", description = f'You got given {afb} duckcoins')
     await ctx.send(embed = em)
   else:
     await ctx.send(embed=discord.Embed(title = "Looks like you don't have an account, Where do you think im gonna put the money? To create one: .createacc"))
-
-@client.command()
-async def rob(ctx, *, member : discord.Member):
-  s = random.randint(0, 1) # 1 or 2
-  a = random.randint(10, 100) # 10 - 100
-  p = member
-  y = ctx.author.name
-  try:
-    pb = db[p]
-  except:
-    ctx.send("Dude they dont even have a bank account")
-  try:
-    yb = db[ctx.author.name]
-  except:
-    ctx.send("Dude you dont even have a bank account")
-  if db[p] in db.keys():
-    if s == 0:
-      db[p] = pb - a
-      db[y] = yb + a
-      await ctx.send(f"You stole {a} duckcoin from {p}")
-    if s == 1:
-      db[y] = yb - a
-      db[p] = pb + a
-      await ctx.send(f"We'll get em next time\nYou paid {p}, {a} duckcoin")
-  else:
-    await ctx.send("Dude they dont even have a bank account")
-
 
 # Admin Commands
 
@@ -334,6 +301,13 @@ async def removecm(ctx, lcname : int):
   leave_cult(lcname)
   em = discord.Embed(title = f'{leavingmember} has been removed from the cult')
   await ctx.send(embed=em)
+  
+@client.command(aliases=["dms"])
+async def spamdm(ctx, amount:int, member:discord.Member, *, message):
+  em = discord.Embed(title = message)
+  for i in range(amount):
+    await member.send(embed=em)
+  await ctx.channel.purge(limit=1)
 
 
 # Help and Command list
