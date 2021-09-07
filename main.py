@@ -32,17 +32,19 @@ intents = discord.Intents.all()
 async def on_ready():
   await client.change_presence(activity=discord.Game("Hunting Frogs"))
   print("A wild duck god has spawned")
+  channel = client.get_channel(861483409179279360)
+  await channel.send('Sup')
 
 # New Member Join
 @client.event
 async def on_member_join(member):
   embeddm = discord.Embed(title = "__Welcome Message!__", description = f"Hey there {member.name}, Welcome to the discord server. My name is duck god. You shall worship me or else.\nIf you want to live - Join the duck cult. Command is .jc \nIt wont work here so type it in the server.\n.help = Help and Command List")
+  channel = client.get_channel()
+  await channel.send(embed=embeddm)
   await member.send(embed=embeddm)
 
 
 # Client Commands
-
-
 
 # Cult Commands:
 
