@@ -32,7 +32,7 @@ intents = discord.Intents.all()
 async def on_ready():
   await client.change_presence(activity=discord.Game("Hunting Frogs"))
   print("A wild duck god has spawned")
-  channel = client.get_channel(861483409179279360)
+  channel = client.get_channel(865762590831149087)
   await channel.send('Sup')
 
 # New Member Join
