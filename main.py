@@ -16,8 +16,6 @@ from discord.ext import tasks
 import youtube_dl
 import praw
 import requests
-import dotenv
-import glob
 
 # Api key for image search
 isapi_key = "AIzaSyCj52wnSciil-4JPd6faOXXHfEb1pzrCuY"
@@ -36,7 +34,7 @@ async def on_ready():
   await client.change_presence(activity=discord.Game("Hunting Frogs"))
   print("A wild duck god has spawned")
   channel = client.get_channel(865762590831149087)
-  await channel.send('Sup')
+#  await channel.send('Sup')
 
 # New Member Join
 @client.event
@@ -316,43 +314,6 @@ async def spamdm(ctx, amount:int, member:discord.Member, *, message):
   for i in range(amount):
     await member.send(embed=em)
   await ctx.channel.purge(limit=1)
-
-# -----------------------------------------------------------------------------------------------------------------------------------
-
-def reddit_client():
-    client = praw.Reddit(
-        client_id=os.environ['CLIENT_ID'],
-        client_secret=os.environ['CLIENT_SECRET'],
-        user_agent=os.environ['USER_AGENT']
-    )
-    return client
-
-@client.command()
-async def meme(ctx, subreddit='memes'):
-
-  # Get top 50 image urls (memes)
-  def get_img_url(client: praw.Reddit, sub_name: str, limit: int):
-      hot_memes = client.subreddit(sub_name).hot(limit=limit)
-      image_urls = []
-      for post in hot_memes:
-          image_urls.append(post.url)
-      return image_urls
-
-  # Get the urls
-  client = reddit_client()
-  urls = get_img_url(client=client, sub_name=subreddit, limit=25)
-
-  # Pick 
-  image = random.choice(urls)
-#  response = requests.get(image)
-#  with open('image.png', 'wb') as f:
-#    f.write(response.content)
-#    f.close()
-#    image = 'image.png'
-
-  embed = discord.Embed(title=f"Duck Meme:")
-  embed.set_image(image)
-  await ctx.send(embed=discord.Embed(embed))
 
 # -----------------------------------------------------------------------------------------------------------------------------------
 
