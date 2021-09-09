@@ -14,6 +14,10 @@ from discord.ext.commands import (CommandNotFound, MissingRequiredArgument, Comm
 import asyncio
 from discord.ext import tasks
 import youtube_dl
+import praw
+import requests
+import dotenv
+import glob
 
 # Api key for image search
 isapi_key = "AIzaSyCj52wnSciil-4JPd6faOXXHfEb1pzrCuY"
@@ -25,7 +29,6 @@ intents = discord.Intents.all()
 
 
 # Events
-
 
 # When bot is online change status and print
 @client.event
@@ -44,8 +47,9 @@ async def on_member_join(member):
   await member.send(embed=embeddm)
 
 
-# Client Commands
+# Client Commands:
 
+# -----------------------------------------------------------------------------------------------------------------------------------
 # Cult Commands:
 
 # Join Cult
@@ -74,7 +78,7 @@ async def list_cult_members(ctx,):
       await ctx.send(dcm[frikinranvar])
       frikinranvar = frikinranvar + 1
 
-
+# -----------------------------------------------------------------------------------------------------------------------------------
 # Fun/Question commands:
 
 # Counting
@@ -152,6 +156,7 @@ async def duckroast(ctx):
   em = discord.Embed(title = roast)
   await ctx.send(embed=em)
 
+# -----------------------------------------------------------------------------------------------------------------------------------
 
 # Message Commands:
 
@@ -185,7 +190,7 @@ async def feedback(ctx, member="FusionSid", *, message):
 from music_cog import music_cog
 client.add_cog(music_cog(client))
 
-
+# -----------------------------------------------------------------------------------------------------------------------------------
 # Duck economy stuff:
 
 # Duck Coin Create Account
@@ -221,6 +226,7 @@ async def beg(ctx):
   else:
     await ctx.send(embed=discord.Embed(title = "Looks like you don't have an account, Where do you think im gonna put the money? To create one: .createacc"))
 
+# -----------------------------------------------------------------------------------------------------------------------------------
 # Admin Commands
 
 def is_it_me(ctx):
@@ -311,6 +317,44 @@ async def spamdm(ctx, amount:int, member:discord.Member, *, message):
     await member.send(embed=em)
   await ctx.channel.purge(limit=1)
 
+# -----------------------------------------------------------------------------------------------------------------------------------
+
+def reddit_client():
+    client = praw.Reddit(
+        client_id=os.environ['CLIENT_ID'],
+        client_secret=os.environ['CLIENT_SECRET'],
+        user_agent=os.environ['USER_AGENT']
+    )
+    return client
+
+@client.command()
+async def meme(ctx, subreddit='memes'):
+
+  # Get top 50 image urls (memes)
+  def get_img_url(client: praw.Reddit, sub_name: str, limit: int):
+      hot_memes = client.subreddit(sub_name).hot(limit=limit)
+      image_urls = []
+      for post in hot_memes:
+          image_urls.append(post.url)
+      return image_urls
+
+  # Get the urls
+  client = reddit_client()
+  urls = get_img_url(client=client, sub_name=subreddit, limit=25)
+
+  # Pick 
+  image = random.choice(urls)
+#  response = requests.get(image)
+#  with open('image.png', 'wb') as f:
+#    f.write(response.content)
+#    f.close()
+#    image = 'image.png'
+
+  embed = discord.Embed(title=f"Duck Meme:")
+  embed.set_image(image)
+  await ctx.send(embed=discord.Embed(embed))
+
+# -----------------------------------------------------------------------------------------------------------------------------------
 
 # Help and Command list
 
@@ -480,6 +524,7 @@ async def on_command_error(ctx, error):
     if errsee.lower() == 'y':
       print(er)
 
+# -----------------------------------------------------------------------------------------------------------------------------------
 # Run
 
 keep_alive()
