@@ -14,7 +14,6 @@ from discord.ext.commands import (CommandNotFound, MissingRequiredArgument, Comm
 import asyncio
 from discord.ext import tasks
 import youtube_dl
-import praw
 import requests
 
 # Api key for image search
@@ -34,7 +33,7 @@ async def on_ready():
   await client.change_presence(activity=discord.Game("Hunting Frogs"))
   print("A wild duck god has spawned")
   channel = client.get_channel(865762590831149087)
-#  await channel.send('Sup')
+  await channel.send("Sup\nI'm Online now")
 
 # New Member Join
 @client.event
@@ -268,12 +267,8 @@ async def ckval(ctx, key, *, val:int):
 @client.command()
 @commands.check(is_it_me)
 async def keyhelp(ctx):
-  em = discord.Embed(
-    title="__Admin Key Commands__\n.dk, .ckv, .kv, kl",
-    description="Delete Key: .dk <key>\nKey list: .kl\nChange Key Value: .kv <key> <value>\n"
-    )
-  member = ctx.author.name
-  await member.send(embed=em)
+  em = discord.Embed(title="__Admin Key Commands__\n.dk, .ckv, .kv, kl", description="Delete Key: .dk <key>\nKey list: .kl\nChange Key Value: .kv <key> <value>\n")
+  await ctx.send(embed=em, delete_after=5)
 # Say stuff
 @client.command(aliases=["s"])
 @commands.check(is_it_me)
@@ -309,11 +304,19 @@ async def removecm(ctx, lcname : int):
   await ctx.send(embed=em)
   
 @client.command(aliases=["dms"])
+@commands.check(is_it_me)
 async def spamdm(ctx, amount:int, member:discord.Member, *, message):
   em = discord.Embed(title = message)
   for i in range(amount):
     await member.send(embed=em)
   await ctx.channel.purge(limit=1)
+
+@client.command()
+@commands.check(is_it_me)
+async def admincmds(ctx):
+  embed = discord.Embed(title = 'Admin Commands:', description = 'removecm <lcname:int>\ndms <amount> <member>\neatm <amount>\nsay <yt/yd/n> <text>\n.keyhelp for key/database commands')
+  
+  await ctx.send(embed=embed, delete_after=5)
 
 # -----------------------------------------------------------------------------------------------------------------------------------
 
@@ -484,7 +487,7 @@ async def on_command_error(ctx, error):
     errsee = input("Wanna see error? y/n ")
     if errsee.lower() == 'y':
       print(er)
-
+      
 # -----------------------------------------------------------------------------------------------------------------------------------
 # Run
 
