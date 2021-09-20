@@ -1,5 +1,4 @@
 # Imports
-# Duck Bot is the best bot
 # Please Don't Ruin This Bot
 
 import os
@@ -23,7 +22,7 @@ prefix = '.'
 client = commands.Bot(prefix, help_command=None)
 intents = discord.Intents.all()
 
-
+# -----------------------------------------------------------------------------------------------------------------------------------
 # Events
 
 # When bot is online change status and print
@@ -31,21 +30,18 @@ intents = discord.Intents.all()
 async def on_ready():
   await client.change_presence(activity=discord.Game("Hunting Frogs"))
   print("A wild duck god has spawned")
-  channel = client.get_channel(865762590831149087)
-  await channel.send("Sup\nI'm Online now")
+  user = client.get_user(624076054969188363)
+  await user.send("Online Now")
 
 # New Member Join
 @client.event
 async def on_member_join(member):
-  embeddm = discord.Embed(title = "__Welcome Message!__", description = f"Hey there {member.name}, Welcome to the discord server. My name is duck god. You shall worship me or else.\nIf you want to live - Join the duck cult. Command is .jc \nIt wont work here so type it in the server.\n.help = Help and Command List")
-  channel = client.get_channel()
-  await channel.send(embed=embeddm)
+  embeddm = discord.Embed(title = "__Welcome Message!__", description = f"Hey there {member.name}, Welcome to the discord server. My name is duck god. You shall worship me or else.\nIf you want to live - Join the duck cult. Command is .jc \nIt wont work here(in dm'ss) so type it in the server.\n.help = Help and Command List")
   await member.send(embed=embeddm)
 
-
+# -----------------------------------------------------------------------------------------------------------------------------------
 # Client Commands:
 
-# -----------------------------------------------------------------------------------------------------------------------------------
 # Cult Commands:
 
 # Join Cult
@@ -78,7 +74,11 @@ async def list_cult_members(ctx,):
 # Fun/Question commands:
 
 # Counting
+def countingchannel(ctx):
+  return ctx.channel.id == 1
+
 @client.command()
+@commands.check(countingchannel)
 async def c(ctx, num: int):
   numrn = db["numrn"]
   if num == numrn + 1:
@@ -153,7 +153,6 @@ async def duckroast(ctx):
   await ctx.send(embed=em)
 
 # -----------------------------------------------------------------------------------------------------------------------------------
-
 # Message Commands:
 
 # Message User
@@ -173,7 +172,7 @@ async def sendroast(ctx, member:discord.Member):
   await ctx.channel.purge(limit=1)
 
 # Feedback
-@client.command(aliases=["fb"])
+@client.command(aliases=["fb", "suggestion", "suggest"])
 async def feedback(ctx, member="FusionSid", *, message):
   embeddm = discord.Embed(title = message)
   await member.send(embed=embeddm)
@@ -268,6 +267,7 @@ async def ckval(ctx, key, *, val:int):
 async def keyhelp(ctx):
   em = discord.Embed(title="__Admin Key Commands__\n.dk, .ckv, .kv, kl", description="Delete Key: .dk <key>\nKey list: .kl\nChange Key Value: .kv <key> <value>\n")
   await ctx.send(embed=em, delete_after=5)
+
 # Say stuff
 @client.command(aliases=["s"])
 @commands.check(is_it_me)
@@ -284,7 +284,7 @@ async def say(ctx, em : str, *, message):
 @client.command(aliases=['eatm', 'clear', 'del'])
 @commands.check(is_it_me)
 async def eatmessage(ctx, ammount : int):
-  await ctx.channel.purge(limit=ammount)
+  await ctx.channel.purge(limit=ammount+1)
 
 # Leave Cult
 def leave_cult(index):
@@ -456,7 +456,7 @@ async def calc(ctx):
   em.add_field(name = "Command", value = ".calc <num1> <operator> <num2>\nOperators: +, -, /, x")
   await ctx.send(embed=em)
 
-
+# -----------------------------------------------------------------------------------------------------------------------------------
 # Errors
 
 @client.event
