@@ -13,7 +13,6 @@ from roastlist import roastlistpy
 from discord.ext.commands import (CommandNotFound, MissingRequiredArgument, CommandOnCooldown)
 import asyncio
 from discord.ext import tasks
-import youtube_dl
 import requests
 
 # Api key for image search
@@ -327,7 +326,7 @@ async def duckcommandhelp(ctx):
   em = discord.Embed(title = "__**Duck Help**__", description = "use .help <command> for extended info on command", color = ctx.author.color)
 
   em.add_field(name = "__Cult__", value = "jc, lc, lcm")
-  em.add_field(name = "__Fun/Questions__", value = "8ball, ducksearch, calc, duckroast, c, fact")
+  em.add_field(name = "__Fun/Questions__", value = "8ball, ducksearch, calc, duckroast, c")
   em.add_field(name = "__Message__", value = "feedback, ducksearch, dm, sendroast")
   em.add_field(name = "__Music__", value = "play, skip, queue")
   em.add_field(name = "__Duckcoin__", value = "createacc, bal, beg")
@@ -352,7 +351,6 @@ async def commands(ctx):
   clembed.add_field(name = "\n__.queue__", value="Queue")
   clembed.add_field(name = "\n__.play__", value="Play Song")
   clembed.add_field(name = "\n__.skip__", value="Skip Song")
-  clembed.add_field(name = "\n__.fact__", value="Random Fact")
   clembed.add_field(name = "\n__.c__", value="Counting - only do in counting channel")
   clembed.add_field(name = "\n__.calc__", value="Calculate.")
   clembed.add_field(name = "\nFor information about command:", value=".help <commandname(without . prefix)>\n")
@@ -366,12 +364,6 @@ async def commands(ctx):
 async def jc(ctx):
   em = discord.Embed(title = "Join Cult", description = "Joins the duck cult", color = ctx.author.color)
   em.add_field(name = "Command", value = ".jc <@name>")
-  await ctx.send(embed=em)
-
-@duckcommandhelp.command()
-async def fact(ctx):
-  em = discord.Embed(title = "Fact", description = "Tells a random fact", color = ctx.author.color)
-  em.add_field(name = "Command", value = ".fact")
   await ctx.send(embed=em)
 
 @duckcommandhelp.command()
