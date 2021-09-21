@@ -31,8 +31,6 @@ intents = discord.Intents.all()
 async def on_ready():
   await client.change_presence(activity=discord.Game("Hunting Frogs"))
   print("A wild duck god has spawned")
-  user = client.get_user(624076054969188363)
-  await user.send("Online Now")
 
 # New Member Join
 @client.event
@@ -76,10 +74,9 @@ async def list_cult_members(ctx,):
 
 # Counting
 def countingchannel(ctx):
-  return ctx.channel.id == 1
+  return ctx.channel.id == 865787555378757672
 
 @client.command()
-@commands.check(countingchannel)
 async def c(ctx, num: int):
   numrn = db["numrn"]
   if num == numrn + 1:
@@ -189,10 +186,10 @@ client.add_cog(music_cog(client))
 # -----------------------------------------------------------------------------------------------------------------------------------
 # Duck economy stuff:
 
-mainshop = [{"name":"Watch","price":100,"description":"Time"},
-            {"name":"Laptop","price":1000,"description":"Work"},
-            {"name":"PC","price":10000,"description":"Gaming"},
-            {"name":"Ferrari","price":99999,"description":"Sports Car"}]
+mainshop = [{"name":"Duck Statue","price":100000,"description":"A massive statue of the all mighty Duck God"},
+            {"name":"Laptop","price":1000,"description":"For them memes and for watching videos on duckhub"},
+            {"name":"PC","price":5000,"description":"Gaaming pc"},
+            {"name":"Duck Car","price":99999,"description":"Duck Car go brrr"}]
 
 @client.command(aliases=['bal'])
 async def balance(ctx):
@@ -210,6 +207,7 @@ async def balance(ctx):
     await ctx.send(embed= em)
 
 @client.command()
+@commands.cooldown(1, 60, commands.BucketType.user)
 async def beg(ctx):
     await open_account(ctx.author)
     user = ctx.author
@@ -277,7 +275,7 @@ async def send(ctx,member : discord.Member,amount = None):
     await open_account(ctx.author)
     await open_account(member)
     if amount == None:
-        await ctx.send("Please enter the amount")
+        await ctx.send("Please enter the amount i havent got all day")
         return
 
     bal = await update_bank(ctx.author)
@@ -287,7 +285,7 @@ async def send(ctx,member : discord.Member,amount = None):
     amount = int(amount)
 
     if amount > bal[0]:
-        await ctx.send('You do not have sufficient balance')
+        await ctx.send('Get some more duckcoins you poor duck\nYou do not have sufficient balance')
         return
     if amount < 0:
         await ctx.send('Amount must be positive!')
@@ -306,7 +304,7 @@ async def rob(ctx,member : discord.Member):
 
 
     if bal[0]<100:
-        await ctx.send('It is useless to rob him :(')
+        await ctx.send('It is useless to rob him/her :(')
         return
 
     earning = random.randrange(0,bal[0])
@@ -317,7 +315,7 @@ async def rob(ctx,member : discord.Member):
 
 
 @client.command()
-async def slots(ctx,amount = None):
+async def gamble(ctx,amount = None):
     await open_account(ctx.author)
     if amount == None:
         await ctx.send("Please enter the amount")
@@ -364,7 +362,7 @@ async def shop(ctx):
 
 
 @client.command()
-async def buy(ctx,item,amount = 1):
+async def buy(ctx,amount = 1, *, item):
     await open_account(ctx.author)
 
     res = await buy_this(ctx.author,item,amount)
@@ -403,7 +401,7 @@ async def bag(ctx):
     await ctx.send(embed = em)
 
 
-async def buy_this(user,item_name,amount):
+async def buy_this(user ,amount, *,item_name):
     item_name = item_name.lower()
     name_ = None
     for item in mainshop:
@@ -689,7 +687,7 @@ async def duckcommandhelp(ctx):
   em.add_field(name = "__Fun/Questions__", value = "8ball, ducksearch, calc, duckroast, c")
   em.add_field(name = "__Message__", value = "feedback, ducksearch, dm, sendroast")
   em.add_field(name = "__Music__", value = "play, skip, queue")
-  em.add_field(name = "__Duckcoin__", value = "createacc, bal, beg")
+  em.add_field(name = "__Duckcoin__", value = "send, bag, sell, buy, dep, with, shop, bal, beg, lb, gamble")
   em.add_field(name = "__More Help:__", value = "Dm FusionSid")
   await ctx.send(embed = em)
 
@@ -702,8 +700,19 @@ async def commands(ctx):
   clembed.add_field(name = "\n__.lcm__", value="List cult members")
   clembed.add_field(name = "\n__.dm__", value="Duck God send DM")
   clembed.add_field(name = "\n__.createacc__", value="Create Account")
+
   clembed.add_field(name = "\n__.bal__", value="Balance")
+  clembed.add_field(name = "\n__.shop__", value="Shop")
+  clembed.add_field(name = "\n__.buy__", value="Buy")
   clembed.add_field(name = "\n__.beg__", value="Beg")
+  clembed.add_field(name = "\n__.with__", value="Withdraw")
+  clembed.add_field(name = "\n__.dep__", value="Deposit")
+  clembed.add_field(name = "\n__.lb__", value="Leaderboard")
+  clembed.add_field(name = "\n__.bag__", value="Bag")
+  clembed.add_field(name = "\n__.send__", value="Send Money")
+  clembed.add_field(name = "\n__.gamble__", value="Gamble")
+  clembed.add_field(name = "\n__.sell__", value="Sell")
+
   clembed.add_field(name = "\n__.8ball__", value="8ball")
   clembed.add_field(name = "\n__.ducksearch__", value="Duck Search")
   clembed.add_field(name = "\n__.duckroast__", value="Duck Roast")
@@ -822,6 +831,8 @@ async def calc(ctx):
 @client.event
 async def on_command_error(ctx, error):
   er = error
+  channel = client.get_channel(889716400392921119)
+  await channel.send(embed=discord.Embed(title="ERROR", description=er))
   if isinstance(error, CommandOnCooldown):
     em = discord.Embed(title = "Wow buddy, Slow it down\nThis command is on cooldown", description = f'Try again in {error.retry_after:,.2f}seconds.') 
     await ctx.send(embed=em)
@@ -835,11 +846,8 @@ async def on_command_error(ctx, error):
     await ctx.send(embed=em)
 
   else:
-    print("An error has occured")
-    errsee = input("Wanna see error? y/n ")
-    if errsee.lower() == 'y':
-      print(er)
-      
+    print("An error has occured:")
+    await ctx.send("ERROR", delete_after=1)
 # -----------------------------------------------------------------------------------------------------------------------------------
 # Run
 
