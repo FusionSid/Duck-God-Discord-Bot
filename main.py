@@ -243,24 +243,6 @@ async def daily(ctx):
 
 
 @client.command()
-@commands.cooldown(1, 60*10080, commands.BucketType.user)
-async def weekly(ctx):
-    await open_account(ctx.author)
-    user = ctx.author
-
-    users = await get_bank_data()
-
-    earnings = 100000
-
-    await ctx.send(f'{ctx.author.mention} Got {earnings} duckcoins!!')
-
-    users[str(user.id)]["wallet"] += earnings
-
-    with open("mainbank.json",'w') as f:
-        json.dump(users,f)
-
-
-@client.command()
 @commands.cooldown(1, 60*43800, commands.BucketType.user)
 async def monthly(ctx):
     await open_account(ctx.author)
@@ -292,6 +274,14 @@ async def work(ctx):
     
     word = random.choice(words)
     word.lower()
+    await ctx.send(word, delete_after=1)
+
+    msg = await client.wait_for("What was the word you just saw?")
+
+    msg.lower()
+
+    if msg == word:
+      solve = True
 
     if solve == True:
       earnings = 15000
