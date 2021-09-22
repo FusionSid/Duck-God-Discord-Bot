@@ -188,7 +188,7 @@ client.add_cog(music_cog(client))
 
 mainshop = [{"name":"Duck Statue","price":100000,"description":"A massive statue of the all mighty Duck God"},
             {"name":"Laptop","price":1000,"description":"For them memes and for watching videos on duckhub"},
-            {"name":"PC","price":5000,"description":"Gaaming pc"},
+            {"name":"PC","price":5000,"description":"Gaming pc"},
             {"name":"Duck Car","price":99999,"description":"Duck Car go brrr"}]
 
 @client.command(aliases=['bal'])
@@ -215,6 +215,88 @@ async def beg(ctx):
     users = await get_bank_data()
 
     earnings = random.randrange(101)
+
+    await ctx.send(f'{ctx.author.mention} Got {earnings} duckcoins!!')
+
+    users[str(user.id)]["wallet"] += earnings
+
+    with open("mainbank.json",'w') as f:
+        json.dump(users,f)
+
+
+@client.command()
+@commands.cooldown(1, 60*1440, commands.BucketType.user)
+async def daily(ctx):
+    await open_account(ctx.author)
+    user = ctx.author
+
+    users = await get_bank_data()
+
+    earnings = 10000
+
+    await ctx.send(f'{ctx.author.mention} Got {earnings} duckcoins!!')
+
+    users[str(user.id)]["wallet"] += earnings
+
+    with open("mainbank.json",'w') as f:
+        json.dump(users,f)
+
+
+@client.command()
+@commands.cooldown(1, 60*10080, commands.BucketType.user)
+async def weekly(ctx):
+    await open_account(ctx.author)
+    user = ctx.author
+
+    users = await get_bank_data()
+
+    earnings = 100000
+
+    await ctx.send(f'{ctx.author.mention} Got {earnings} duckcoins!!')
+
+    users[str(user.id)]["wallet"] += earnings
+
+    with open("mainbank.json",'w') as f:
+        json.dump(users,f)
+
+
+@client.command()
+@commands.cooldown(1, 60*43800, commands.BucketType.user)
+async def monthly(ctx):
+    await open_account(ctx.author)
+    user = ctx.author
+
+    users = await get_bank_data()
+
+    earnings = 500000
+
+    await ctx.send(f'{ctx.author.mention} Got {earnings} duckcoins!!')
+
+    users[str(user.id)]["wallet"] += earnings
+
+    with open("mainbank.json",'w') as f:
+        json.dump(users,f)
+
+
+@client.command()
+@commands.cooldown(1, 60, commands.BucketType.user)
+async def work(ctx):
+    await open_account(ctx.author)
+    user = ctx.author
+
+    users = await get_bank_data()
+
+    solve = False
+
+    words = ["Duck", "frog", "grapes", "lemonade"]
+    
+    word = random.choice(words)
+    word.lower()
+
+    if solve == True:
+      earnings = 15000
+    else:
+      earnings = 5000
 
     await ctx.send(f'{ctx.author.mention} Got {earnings} duckcoins!!')
 
@@ -360,7 +442,6 @@ async def shop(ctx):
     await ctx.send(embed = em)
 
 
-
 @client.command()
 async def buy(ctx,amount = 1, *, item):
     await open_account(ctx.author)
@@ -377,28 +458,6 @@ async def buy(ctx,amount = 1, *, item):
 
 
     await ctx.send(f"You just bought {amount} {item}")
-
-
-@client.command()
-async def bag(ctx):
-    await open_account(ctx.author)
-    user = ctx.author
-    users = await get_bank_data()
-
-    try:
-        bag = users[str(user.id)]["bag"]
-    except:
-        bag = []
-
-
-    em = discord.Embed(title = "Bag")
-    for item in bag:
-        name = item["item"]
-        amount = item["amount"]
-
-        em.add_field(name = name, value = amount)    
-
-    await ctx.send(embed = em)
 
 
 async def buy_this(user ,amount, *,item_name):
@@ -449,7 +508,29 @@ async def buy_this(user ,amount, *,item_name):
     await update_bank(user,cost*-1,"wallet")
 
     return [True,"Worked"]
-    
+
+
+@client.command()
+async def bag(ctx):
+    await open_account(ctx.author)
+    user = ctx.author
+    users = await get_bank_data()
+
+    try:
+        bag = users[str(user.id)]["bag"]
+    except:
+        bag = []
+
+
+    em = discord.Embed(title = "Bag")
+    for item in bag:
+        name = item["item"]
+        amount = item["amount"]
+
+        em.add_field(name = name, value = amount)    
+
+    await ctx.send(embed = em)
+
 
 @client.command()
 async def sell(ctx,item,amount = 1):
@@ -459,7 +540,7 @@ async def sell(ctx,item,amount = 1):
 
     if not res[0]:
         if res[1]==1:
-            await ctx.send("That Object isn't there!")
+            await ctx.send("You dont have that item!")
             return
         if res[1]==2:
             await ctx.send(f"You don't have {amount} {item} in your bag.")
@@ -531,7 +612,7 @@ async def leaderboard(ctx,x = 1):
 
     total = sorted(total,reverse=True)    
 
-    em = discord.Embed(title = f"Top {x} Richest People" , description = "This is decided on the basis of raw duckcoins in the bank and wallet",color = discord.Color(0xfa43ee))
+    em = discord.Embed(title = f"Top {x} Richest People" , description = "This is decided on the basis of raw money in the bank and wallet",color = discord.Color(0xfa43ee))
     index = 1
     for amt in total:
         id_ = leader_board[amt]
