@@ -194,7 +194,7 @@ client.add_cog(music_cog(client))
 # DUCK BATTLE
 @client.command(aliases=["fight"])
 async def battle(ctx):
-  await ctx.send(embed=discord.embed(title = "Duck War", description = "How many ducks are you sending into battle(1 duck costs 50 duckcoins)"))
+  await ctx.send(embed=discord.Embed(title = "Duck War", description = "How many ducks are you sending into battle(1 duck costs 50 duckcoins)"))
   msg = await client.wait_for("message")
   msg = int(msg)
   lived = 0
@@ -203,7 +203,7 @@ async def battle(ctx):
     if live >= 50:
       lived = lived + 1
   dead = msg - lived
-  await ctx.send(embed=discord.embed(title=f"Ducks Lived = {lived}, Ducks Lost = {dead}"))  
+  await ctx.send(embed=discord.Embed(title=f"Ducks Lived = {lived}, Ducks Lost = {dead}"))  
   if lived > dead:
     win = True
     await open_account(ctx.author)
@@ -444,8 +444,8 @@ async def gamble(ctx,amount = None):
 
 
 @client.command()
-async def shop(ctx, *, item=None):
-    if item == None:
+async def shop(ctx, *, item_=None):
+    if item_ == None:
       em = discord.Embed(title = "Shop")
 
       for item in mainshop:
@@ -457,12 +457,13 @@ async def shop(ctx, *, item=None):
             em.add_field(name = name, value = f"${price} | {desc}")
     else:
       em = discord.Embed(title = "Shop")
-      item_ = mainshop[item]
-      name = item["name"]
-      price = item["price"]
-      desc = item["description"]
-      buy = item['buy']
-      em.add_field(name = name, value = f"${price} | {desc}")
+      for item in mainshop:
+        if item == item_:
+          name = item["name"]
+          price = item["price"]
+          desc = item["description"]
+          buy = item['buy']
+          em.add_field(name = name, value = f"${price} | {desc}")
     await ctx.send(embed = em)
 
 
@@ -557,7 +558,7 @@ async def bag(ctx):
 
 
 @client.command()
-async def sell(ctx,item,amount = 1):
+async def sell(ctx,amount=1, *, item):
     await open_account(ctx.author)
 
     res = await sell_this(ctx.author,item,amount)
