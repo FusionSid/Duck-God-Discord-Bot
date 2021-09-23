@@ -193,48 +193,55 @@ client.add_cog(music_cog(client))
 
 # DUCK BATTLE
 @client.command(aliases=["fight"])
-async def battle(ctx):
-  await ctx.send(embed=discord.Embed(title = "Duck War", description = "How many ducks are you sending into battle(1 duck costs 50 duckcoins)"))
-  msg = await client.wait_for("message")
-  msg = int(msg)
-  lived = 0
-  for i in range(msg):
-    live = random.randint(0, 100)
-    if live >= 50:
-      lived = lived + 1
-  dead = msg - lived
-  await ctx.send(embed=discord.Embed(title=f"Ducks Lived = {lived}, Ducks Lost = {dead}"))  
-  if lived > dead:
-    win = True
-    await open_account(ctx.author)
-    user = ctx.author
+async def battle(ctx, amount:int):
+  def wfcheck(m):
+    return m.channel == ctx.channel and m.author == ctx.author
+  await ctx.send(embed=discord.Embed(title = "Duck War", description = f"Are you sure you want to send {amount} into battle? \n(1 duck costs 500 duckcoins yeah i know they are really underpaid)\ny/n"))
+  msg = await client.wait_for("message", check=wfcheck)
+  msg = msg.content
+  print(msg)
+  if msg.lower() == "y":
+    lived = 0
+    for i in range(amount):
+      live = random.randint(0, 100)
+      if live >= 50:
+        lived = lived + 1
+    dead = amount - lived
+    await ctx.send(embed=discord.Embed(title=f"Ducks Lived = {lived}, Ducks Lost = {dead}"))  
+    if lived > dead:
+      win = True
+      await open_account(ctx.author)
+      user = ctx.author
 
-    users = await get_bank_data()
+      users = await get_bank_data()
 
-    earnings = 10000
+      earnings = 10000
 
-    await ctx.send(f'{ctx.author.mention} Got {earnings} duckcoins for winning the war!!')
+      await ctx.send(f'{ctx.author.mention} Got {earnings} duckcoins for winning the war!!')
 
-    users[str(user.id)]["wallet"] += earnings
+      users[str(user.id)]["wallet"] += earnings
 
-    with open("mainbank.json",'w') as f:
-        json.dump(users,f)
+      with open("mainbank.json",'w') as f:
+          json.dump(users,f)
+    else:
+      win = False
+      await ctx.send("Duck YOU, Inocent ducks have lost their lives\nYou lose the war")
+      await open_account(ctx.author)
+      user = ctx.author
+
+      users = await get_bank_data()
+
+      earnings = dead
+
+      await ctx.send(f'{ctx.author.mention} Lost {earnings} duckcoins!!')
+
+      users[str(user.id)]["wallet"] -= earnings
+
+      with open("mainbank.json", 'w') as f:
+          json.dump(users, f)
   else:
-    win = False
-    await ctx.send("Duck YOU, Inocent ducks have lost their lives\nYou lose the war")
-    await open_account(ctx.author)
-    user = ctx.author
+    await ctx.send("Ok")
 
-    users = await get_bank_data()
-
-    earnings = dead
-
-    await ctx.send(f'{ctx.author.mention} Lost {earnings} duckcoins!!')
-
-    users[str(user.id)]["wallet"] -= earnings
-
-    with open("mainbank.json", 'w') as f:
-        json.dump(users, f)
   
 
 # -----------------------------------------------------------------------------------------------------------------------------------
