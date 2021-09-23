@@ -201,11 +201,7 @@ async def battle(ctx, amount:int):
   msg = msg.content
   print(msg)
   if msg.lower() == "y":
-    lived = 0
-    for i in range(amount):
-      live = random.randint(0, 100)
-      if live >= 50:
-        lived = lived + 1
+    lived = random.randint(0, amount)
     dead = amount - lived
     await ctx.send(embed=discord.Embed(title=f"Ducks Lived = {lived}, Ducks Lost = {dead}"))  
     if lived > dead:
