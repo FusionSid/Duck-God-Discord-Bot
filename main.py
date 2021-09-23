@@ -15,6 +15,12 @@ from discord.ext import tasks
 import requests
 import json
 
+rank = {
+  "Duck God - Owner": "FusioSid",
+}
+
+fusionsid = 624076054969188363
+
 # Api key for image search
 isapi_key = "AIzaSyCj52wnSciil-4JPd6faOXXHfEb1pzrCuY"
 
@@ -31,6 +37,8 @@ intents = discord.Intents.all()
 async def on_ready():
   await client.change_presence(activity=discord.Game("Hunting Frogs"))
   print("A wild duck god has spawned")
+  channel = client.get_channel(889716400392921119)
+  await channel.send("Online")
 
 # New Member Join
 @client.event
@@ -183,13 +191,65 @@ async def feedback(ctx, member="FusionSid", *, message):
 from music_cog import music_cog
 client.add_cog(music_cog(client))
 
+# DUCK BATTLE
+@client.command(aliases=["fight"])
+async def battle(ctx):
+  await ctx.send(embed=discord.embed(title = "Duck War", description = "How many ducks are you sending into battle(1 duck costs 50 duckcoins)"))
+  msg = await client.wait_for("message")
+  msg = int(msg)
+  lived = 0
+  for i in range(msg):
+    live = random.randint(0, 100)
+    if live >= 50:
+      lived = lived + 1
+  dead = msg - lived
+  await ctx.send(embed=discord.embed(title=f"Ducks Lived = {lived}, Ducks Lost = {dead}"))  
+  if lived > dead:
+    win = True
+    await open_account(ctx.author)
+    user = ctx.author
+
+    users = await get_bank_data()
+
+    earnings = 10000
+
+    await ctx.send(f'{ctx.author.mention} Got {earnings} duckcoins for winning the war!!')
+
+    users[str(user.id)]["wallet"] += earnings
+
+    with open("mainbank.json",'w') as f:
+        json.dump(users,f)
+  else:
+    win = False
+    await ctx.send("Duck YOU, Inocent ducks have lost their lives\nYou lose the war")
+    await open_account(ctx.author)
+    user = ctx.author
+
+    users = await get_bank_data()
+
+    earnings = dead
+
+    await ctx.send(f'{ctx.author.mention} Lost {earnings} duckcoins!!')
+
+    users[str(user.id)]["wallet"] -= earnings
+
+    with open("mainbank.json", 'w') as f:
+        json.dump(users, f)
+  
+
 # -----------------------------------------------------------------------------------------------------------------------------------
 # Duck economy stuff:
 
-mainshop = [{"name":"Duck Statue","price":100000,"description":"A massive statue of the all mighty Duck God"},
-            {"name":"Laptop","price":1000,"description":"For them memes and for watching videos on duckhub"},
-            {"name":"PC","price":5000,"description":"Gaming pc"},
-            {"name":"Duck Car","price":99999,"description":"Duck Car go brrr"}]
+mainshop = [{"name":"Duck Statue","price":100000,"description":"A massive statue of the all mighty Duck God","buy":True},
+            {"name":"Laptop","price":1000,"description":"For them memes and for watching videos on duckhub","buy":True},
+            {"name":"PC","price":5000,"description":"a really powerful gaming pc powered by the blood of you enemies","buy":True},
+            {"name":"Duck Car","price":99999,"description":"Duck Car go brrr","buy":True},
+            {"name": "Frog foot", "price": 1000, "description":"Frog foot to show off at your next duck meeting\nCollectable - Not Available to buy","buy":False},
+            {"name": "Frog head", "price": 10000, "description":"The head of a frog. An amazing flex.\nCollectable - Not Available to buy","buy":False},
+            {"name": "Frog Corpse", "price": 1000000, "description": "The ULTIMATE flex. You murdered an entire frog\nCollectable - Not Available to buy","buy":False}
+            ]
+
+# {"name": "", "price": , "description":""}
 
 @client.command(aliases=['bal'])
 async def balance(ctx):
@@ -251,42 +311,6 @@ async def monthly(ctx):
     users = await get_bank_data()
 
     earnings = 500000
-
-    await ctx.send(f'{ctx.author.mention} Got {earnings} duckcoins!!')
-
-    users[str(user.id)]["wallet"] += earnings
-
-    with open("mainbank.json",'w') as f:
-        json.dump(users,f)
-
-
-@client.command()
-@commands.cooldown(1, 60, commands.BucketType.user)
-async def work(ctx):
-    await open_account(ctx.author)
-    user = ctx.author
-
-    users = await get_bank_data()
-
-    solve = False
-
-    words = ["Duck", "frog", "grapes", "lemonade"]
-    
-    word = random.choice(words)
-    word.lower()
-    await ctx.send(word, delete_after=1)
-
-    msg = await client.wait_for("What was the word you just saw?")
-
-    msg.lower()
-
-    if msg == word:
-      solve = True
-
-    if solve == True:
-      earnings = 15000
-    else:
-      earnings = 5000
 
     await ctx.send(f'{ctx.author.mention} Got {earnings} duckcoins!!')
 
@@ -420,15 +444,25 @@ async def gamble(ctx,amount = None):
 
 
 @client.command()
-async def shop(ctx):
-    em = discord.Embed(title = "Shop")
+async def shop(ctx, *, item=None):
+    if item == None:
+      em = discord.Embed(title = "Shop")
 
-    for item in mainshop:
-        name = item["name"]
-        price = item["price"]
-        desc = item["description"]
-        em.add_field(name = name, value = f"${price} | {desc}")
-
+      for item in mainshop:
+          name = item["name"]
+          price = item["price"]
+          desc = item["description"]
+          buy = item['buy']
+          if buy == True:
+            em.add_field(name = name, value = f"${price} | {desc}")
+    else:
+      em = discord.Embed(title = "Shop")
+      item_ = mainshop[item]
+      name = item["name"]
+      price = item["price"]
+      desc = item["description"]
+      buy = item['buy']
+      em.add_field(name = name, value = f"${price} | {desc}")
     await ctx.send(embed = em)
 
 
@@ -436,7 +470,7 @@ async def shop(ctx):
 async def buy(ctx,amount = 1, *, item):
     await open_account(ctx.author)
 
-    res = await buy_this(ctx.author,item,amount)
+    res = await buy_this(ctx.author,amount,item)
 
     if not res[0]:
         if res[1]==1:
@@ -450,7 +484,7 @@ async def buy(ctx,amount = 1, *, item):
     await ctx.send(f"You just bought {amount} {item}")
 
 
-async def buy_this(user ,amount, *,item_name):
+async def buy_this(user, amount, item_name):
     item_name = item_name.lower()
     name_ = None
     for item in mainshop:
