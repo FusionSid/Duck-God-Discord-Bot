@@ -196,7 +196,7 @@ client.add_cog(music_cog(client))
 async def battle(ctx, amount:int):
   def wfcheck(m):
     return m.channel == ctx.channel and m.author == ctx.author
-  await ctx.send(embed=discord.Embed(title = "Duck War", description = f"Are you sure you want to send {amount} into battle? \n(1 duck costs 500 duckcoins yeah i know they are really underpaid)\ny/n"))
+  await ctx.send(embed=discord.Embed(title = "Duck War", description = f"Are you sure you want to send {amount} into battle? \n(1 duck costs 69 duckcoins yeah i know they are really underpaid)\ny/n"))
   msg = await client.wait_for("message", check=wfcheck)
   msg = msg.content
   print(msg)
@@ -221,13 +221,13 @@ async def battle(ctx, amount:int):
           json.dump(users,f)
     else:
       win = False
-      await ctx.send("Duck YOU, Inocent ducks have lost their lives\nYou lose the war")
+      await ctx.send("Duck You, Inocent ducks have lost their lives\nYou lose the war")
       await open_account(ctx.author)
       user = ctx.author
 
       users = await get_bank_data()
 
-      earnings = dead
+      earnings = dead*69
 
       await ctx.send(f'{ctx.author.mention} Lost {earnings} duckcoins!!')
 
@@ -255,7 +255,10 @@ mainshop = [{"name":"Duck Statue","price":100000,"description":"A massive statue
 # {"name": "", "price": , "description":""}
 
 @client.command(aliases=['bal'])
-async def balance(ctx):
+async def balance(ctx, person:discord.Member=None):
+  print(person)
+  if person == None:
+    print(ctx.author)
     await open_account(ctx.author)
     user = ctx.author
 
@@ -265,6 +268,19 @@ async def balance(ctx):
     bank_amt = users[str(user.id)]["bank"]
 
     em = discord.Embed(title=f'{ctx.author.name} Balance',color = discord.Color.red())
+    em.add_field(name="Wallet Balance", value=wallet_amt)
+    em.add_field(name='Bank Balance',value=bank_amt)
+    await ctx.send(embed= em)
+  else:
+    await open_account(person)
+    user = person
+
+    users = await get_bank_data()
+
+    wallet_amt = users[str(user.id)]["wallet"]
+    bank_amt = users[str(user.id)]["bank"]
+
+    em = discord.Embed(title=f'{person.name} Balance',color = discord.Color.red())
     em.add_field(name="Wallet Balance", value=wallet_amt)
     em.add_field(name='Bank Balance',value=bank_amt)
     await ctx.send(embed= em)
@@ -633,10 +649,13 @@ async def leaderboard(ctx,x = 1):
     leader_board = {}
     total = []
     for user in users:
+      try:
         name = int(user)
         total_amount = users[user]["wallet"] + users[user]["bank"]
         leader_board[total_amount] = name
         total.append(total_amount)
+      except:
+        pass
 
     total = sorted(total,reverse=True)    
 
@@ -786,6 +805,10 @@ async def admincmds(ctx):
 
 # -----------------------------------------------------------------------------------------------------------------------------------
 
+@client.command(aliases=['code'])
+async def sourcecode(ctx):
+  await ctx.send("https://github.com/FusionSid/Duck-God-Discord-Bot")
+  
 # Help and Command list
 
 @client.group(invoke_without_command=True, aliases=["duckhelp", "help"])
@@ -797,6 +820,7 @@ async def duckcommandhelp(ctx):
   em.add_field(name = "__Message__", value = "feedback, ducksearch, dm, sendroast")
   em.add_field(name = "__Music__", value = "play, skip, queue")
   em.add_field(name = "__Duckcoin__", value = "send, bag, sell, buy, dep, with, shop, bal, beg, lb, gamble")
+  em.add_field(name = "__Source Code:__", value = "https://github.com/FusionSid/Duck-God-Discord-Bot")
   em.add_field(name = "__More Help:__", value = "Dm FusionSid")
   await ctx.send(embed = em)
 
