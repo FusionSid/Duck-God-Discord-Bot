@@ -605,12 +605,14 @@ async def shop(ctx, *, item_=None):
     else:
         em = discord.Embed(title="Shop")
         for item in mainshop:
-            if item == item_:
+            if item["name"].lower() == item_.lower():
                 name = item["name"]
                 price = item["price"]
                 desc = item["description"]
                 buy = item['buy']
                 em.add_field(name=name, value=f"${price} | {desc}")
+            else:
+              em.add_field(name=item_, value="Item not in shop")
     await ctx.send(embed=em)
 
 
