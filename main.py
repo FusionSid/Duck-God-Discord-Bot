@@ -32,11 +32,9 @@ client = commands.Bot(prefix, help_command=None)
 intents = discord.Intents.all()
 
 # -----------------------------------------------------------------------------------------------------------------------------------
-# Events
+# Events and loops
 
 # When bot is online change status and print
-
-
 @client.event
 async def on_ready():
     await client.change_presence(activity=discord.Game("Hunting Frogs"))
@@ -45,13 +43,24 @@ async def on_ready():
     await channel.send("Online")
 
 # New Member Join
-
-
 @client.event
 async def on_member_join(member):
     embeddm = discord.Embed(title="__Welcome Message!__",
                             description=f"Hey there {member.name}, Welcome to the discord server. My name is duck god. You shall worship me or else.\nIf you want to live - Join the duck cult. Command is .jc \nIt wont work here(in dm'ss) so type it in the server.\n.help = Help and Command List")
     await member.send(embed=embeddm)
+
+@tasks.loop(seconds=10)
+async def genintrest():
+    with open('mainbank.json', 'r') as f:
+        users = json.load(f)
+
+    for user in users:
+        bank = users[user]["bank"]
+        bank += bank*0.069
+        print(bank)
+        users[user]["bank"] = bank
+        with open('mainbank.json', 'w') as f:
+            json.dump(users, f)
 
 # -----------------------------------------------------------------------------------------------------------------------------------
 # Client Commands:
