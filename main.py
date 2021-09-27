@@ -21,8 +21,6 @@ rank = {
     "Duck God - Owner": "FusioSid",
 }
 
-fusionsid = 624076054969188363
-
 # Api key for image search
 isapi_key = "AIzaSyCj52wnSciil-4JPd6faOXXHfEb1pzrCuY"
 
@@ -30,6 +28,9 @@ isapi_key = "AIzaSyCj52wnSciil-4JPd6faOXXHfEb1pzrCuY"
 prefix = '.'
 client = commands.Bot(prefix, help_command=None)
 intents = discord.Intents.all()
+
+fusionsidid = 624076054969188363
+fusionsid = client.fetch_user(624076054969188363)
 
 # -----------------------------------------------------------------------------------------------------------------------------------
 # Events and loops
@@ -49,20 +50,28 @@ async def on_member_join(member):
                             description=f"Hey there {member.name}, Welcome to the discord server. My name is duck god. You shall worship me or else.\nIf you want to live - Join the duck cult. Command is .jc \nIt wont work here(in dm'ss) so type it in the server.\n.help = Help and Command List")
     await member.send(embed=embeddm)
 
-@tasks.loop(seconds=10)
+@tasks.loop(minutes=60.0)
 async def genintrest():
-    with open('mainbank.json', 'r') as f:
-        users = json.load(f)
+  with open('mainbank.json', 'r') as f:
+      users = json.load(f)
 
-    for user in users:
-        bank = users[user]["bank"]
-        bank += bank*0.069
-        print(bank)
-        users[user]["bank"] = bank
-        with open('mainbank.json', 'w') as f:
-            json.dump(users, f)
+  for user in users:
+      bank = users[user]["bank"]
+      before = bank
+      bank += bank*0.069
+      money_made = bank - before
+      sendto = await client.fetch_user(user)
+      await sendto.send(embed=discord.Embed(title="Intrest", description=f"You made {money_made} in intrest while you were away by keeping your coins in duck bank!"))
+      users[user]["bank"] = bank
+      with open('mainbank.json', 'w') as f:
+        json.dump(users, f)
+
+  print("Generated Intrest")
+
+genintrest.start()
 
 # -----------------------------------------------------------------------------------------------------------------------------------
+
 # Client Commands:
 
 # Cult Commands:
@@ -342,6 +351,10 @@ async def balance(ctx, person: discord.Member = None):
         wallet_amt = users[str(user.id)]["wallet"]
         bank_amt = users[str(user.id)]["bank"]
 
+        # round
+        wallet_amt = round(wallet_amt, 2)
+        bank_amt = round(bank_amt, 2)
+
         em = discord.Embed(
             title=f'{ctx.author.name} Balance', color=discord.Color.red())
         em.add_field(name="Wallet Balance", value=wallet_amt)
@@ -356,10 +369,10 @@ async def balance(ctx, person: discord.Member = None):
         wallet_amt = users[str(user.id)]["wallet"]
         bank_amt = users[str(user.id)]["bank"]
 
-        em = discord.Embed(
-            title=f'{person.name} Balance', color=discord.Color.red())
+        em = discord.Embed(title=f'{person.name} Balance', color=discord.Color.red())
         em.add_field(name="Wallet Balance", value=wallet_amt)
         em.add_field(name='Bank Balance', value=bank_amt)
+        em.add_field(name="Tip", value="Keeping coins in bank generates 0.69% intrest per hour")
         await ctx.send(embed=em)
 
 @client.command()
