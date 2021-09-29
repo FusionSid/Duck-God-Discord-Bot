@@ -12,6 +12,7 @@ from googleapiclient.discovery import build
 from roastlist import roastlistpy
 from discord.ext.commands import (
     CommandNotFound, MissingRequiredArgument, CommandOnCooldown)
+import database
 import asyncio
 from discord.ext import tasks
 import requests
@@ -46,9 +47,9 @@ async def on_ready():
 # New Member Join
 @client.event
 async def on_member_join(member):
-    embeddm = discord.Embed(title="__Welcome Message!__",
-                            description=f"Hey there {member.name}, Welcome to the discord server. My name is duck god. You shall worship me or else.\nIf you want to live - Join the duck cult. Command is .jc \nIt wont work here(in dm'ss) so type it in the server.\n.help = Help and Command List")
-    await member.send(embed=embeddm)
+  channel = member.channel
+  embeddm = discord.Embed(title="__Welcome Message!__",description=f"Hey there {member.name}, Welcome to the discord server. My name is duck god. You shall worship me or else.\nIf you want to live - Join the duck cult. Command is .jc \n.help = Help and Command List")
+  await channel.send(embed=embeddm)
 
 @tasks.loop(minutes=60.0)
 async def genintrest():
@@ -245,9 +246,29 @@ client.add_cog(music_cog(client))
 
 @client.command(aliases=["fight"])
 async def battle(ctx, amount: int):
+    user = ctx.author
+
+    users = await get_bank_data()
+
+    wallet = users[str(user.id)]["wallet"]
+    bank = users[str(user.id)]["bank"]
+
+    try:
+        amount = int(amount)
+
+    except:
+        if amount.lower() == "max":
+            amount = bank
+
+        elif amount.lower() == "all":
+            amount = bank
+
+        else:
+            amount = conv2num(amount)
+
     def wfcheck(m):
         return m.channel == ctx.channel and m.author == ctx.author
-    await ctx.send(embed=discord.Embed(title="Duck War", description=f"Are you sure you want to send {amount} into battle? \n(1 duck costs 69 duckcoins yeah i know they are really underpaid)\ny/n"))
+    await ctx.send(embed=discord.Embed(title="Duck War", description=f"Are you sure you want to send {amount} into battle? \n(1 duck costs 69 duckcoins)\ny/n"))
     msg = await client.wait_for("message", check=wfcheck)
     msg = msg.content
     print(msg)
@@ -262,9 +283,9 @@ async def battle(ctx, amount: int):
 
             users = await get_bank_data()
 
-            earnings = 10000
+            earnings = lived*69
 
-            await ctx.send(f'{ctx.author.mention} Got {earnings} duckcoins for winning the war!!')
+            await ctx.send('{} Got {:,} duckcoins for winning the war!!'.format(ctx.author.mention, earnings))
 
             users[str(user.id)]["wallet"] += earnings
 
@@ -280,7 +301,7 @@ async def battle(ctx, amount: int):
 
             earnings = dead*69
 
-            await ctx.send(embed=discord.Embed(title = f'{ctx.author.mention}', description = f'Lost {earnings} duckcoins!!'))
+            await ctx.send(embed=discord.Embed(title = f'{ctx.author.mention}', description = 'Lost {:,} duckcoins!!'.format(earnings)))
 
             users[str(user.id)]["wallet"] -= earnings
 
@@ -350,10 +371,13 @@ async def balance(ctx, person: discord.Member = None):
 
         wallet_amt = users[str(user.id)]["wallet"]
         bank_amt = users[str(user.id)]["bank"]
-
+        
         # round
         wallet_amt = round(wallet_amt, 2)
         bank_amt = round(bank_amt, 2)
+        
+        wallet_amt = "{:,}".format(wallet_amt)
+        bank_amt = "{:,}".format(bank_amt)
 
         em = discord.Embed(
             title=f'{ctx.author.name} Balance', color=discord.Color.red())
@@ -368,11 +392,14 @@ async def balance(ctx, person: discord.Member = None):
 
         wallet_amt = users[str(user.id)]["wallet"]
         bank_amt = users[str(user.id)]["bank"]
+        
+        # round
+        wallet_amt = round(wallet_amt, 2)
+        bank_amt = round(bank_amt, 2)
 
         em = discord.Embed(title=f'{person.name} Balance', color=discord.Color.red())
         em.add_field(name="Wallet Balance", value=wallet_amt)
         em.add_field(name='Bank Balance', value=bank_amt)
-        em.add_field(name="Tip", value="Keeping coins in bank generates 0.69% intrest per hour")
         await ctx.send(embed=em)
 
 @client.command()
@@ -403,7 +430,7 @@ async def daily(ctx):
 
     earnings = 10000
 
-    await ctx.send(embed=discord.Embed(title = f'{ctx.author.mention}', description = f'Got {earnings} duckcoins!!'))
+    await ctx.send(embed=discord.Embed(title = f'{ctx.author.mention}', description = 'Got {:,} duckcoins!!'.format(earnings)))
 
     users[str(user.id)]["wallet"] += earnings
 
@@ -451,7 +478,7 @@ async def withdraw(ctx, amount=None):
 
     await update_bank(ctx.author, amount)
     await update_bank(ctx.author, -1*amount, 'bank')
-    await ctx.send(f'{ctx.author.mention} You withdrew {amount} coins')
+    await ctx.send('{ctx.author.mention} You withdrew {:,} coins'.format(amount))
 
 
 @client.command(aliases=['dep'])
@@ -494,7 +521,7 @@ async def deposit(ctx, amount=None):
 
     await update_bank(ctx.author, -1*amount)
     await update_bank(ctx.author, amount, 'bank')
-    await ctx.send(f'{ctx.author.mention} You deposited {amount} coins')
+    await ctx.send('{ctx.author.mention} You deposited {:,} coins'.format(amount))
 
 
 @client.command(aliases=['sm'])
@@ -613,6 +640,7 @@ async def shop(ctx, *, item_=None):
                 em.add_field(name=name, value=f"${price} | {desc}")
             else:
               em.add_field(name=item_, value="Item not in shop")
+              break
     await ctx.send(embed=em)
 
 
@@ -912,6 +940,26 @@ async def spamdm(ctx, amount: int, member: discord.Member, *, message):
         await member.send(embed=em)
     await ctx.channel.purge(limit=1)
 
+
+# Custom SQL Command
+@client.command()
+@commands.check(is_it_me)
+async def sql(ctx, *, cmd):
+  database.execute(cmd)
+  await ctx.send("Done", delete_after=1)
+
+
+@client.command()
+@commands.check(is_it_me)
+async def sqlsearch(ctx, *, cmd):
+  search = database.search(cmd)
+  await ctx.send(search)
+
+
+@client.command()
+@commands.check(is_it_me)
+async def sqlundo(ctx):
+  database.undo()
 
 @client.command()
 @commands.check(is_it_me)
