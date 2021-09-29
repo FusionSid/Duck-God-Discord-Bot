@@ -62,6 +62,8 @@ async def genintrest():
       bank += bank*0.069
       money_made = bank - before
       sendto = await client.fetch_user(user)
+      fmm = '{:,}'.format(money_made)
+      fmm = round(fmm, 2)
       await sendto.send(embed=discord.Embed(title="Intrest", description=f"You made {money_made} in intrest while you were away by keeping your coins in duck bank!"))
       users[user]["bank"] = bank
       with open('mainbank.json', 'w') as f:
@@ -478,7 +480,7 @@ async def withdraw(ctx, amount=None):
 
     await update_bank(ctx.author, amount)
     await update_bank(ctx.author, -1*amount, 'bank')
-    await ctx.send('{ctx.author.mention} You withdrew {:,} coins'.format(amount))
+    await ctx.send('{} You withdrew {:,} coins'.format(ctx.author.mention, amount))
 
 
 @client.command(aliases=['dep'])
@@ -521,7 +523,7 @@ async def deposit(ctx, amount=None):
 
     await update_bank(ctx.author, -1*amount)
     await update_bank(ctx.author, amount, 'bank')
-    await ctx.send('{ctx.author.mention} You deposited {:,} coins'.format(amount))
+    await ctx.send('{} You deposited {:,} coins'.format(ctx.author.mention, amount))
 
 
 @client.command(aliases=['sm'])
