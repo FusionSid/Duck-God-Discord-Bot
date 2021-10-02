@@ -51,6 +51,26 @@ async def on_member_join(member):
   embeddm = discord.Embed(title="__Welcome Message!__",description=f"Hey there {member.name}, Welcome to the discord server. My name is duck god. You shall worship me or else.\nIf you want to live - Join the duck cult. Command is .jc \n.help = Help and Command List")
   await channel.send(embed=embeddm)
 
+@client.event
+async def on_message(message):
+  channel = message.channel
+  msg = message.content
+  
+  if message.author == client.user:
+        return
+
+  bad_word = database.check_word(msg)
+  if bad_word == True:
+    await message.channel.purge(limit=1)
+    await message.channel.send("Thats a bad word", delete_after=1.5)
+
+  if channel.id == 892597297626628127:
+    await message.channel.send("sup")
+
+  await client.process_commands(message)
+
+  
+
 @tasks.loop(minutes=60.0)
 async def genintrest():
   with open('mainbank.json', 'r') as f:
@@ -62,9 +82,8 @@ async def genintrest():
       bank += bank*0.069
       money_made = bank - before
       sendto = await client.fetch_user(user)
-      fmm = '{:,}'.format(money_made)
-      fmm = round(fmm, 2)
-      await sendto.send(embed=discord.Embed(title="Intrest", description=f"You made {money_made} in intrest while you were away by keeping your coins in duck bank!"))
+      msg_dm = f"You made {money_made} in intrest while you were away by keeping your coins in duck bank!"
+      await sendto.send(embed=discord.Embed(title="Intrest", description=msg_dm))
       users[user]["bank"] = bank
       with open('mainbank.json', 'w') as f:
         json.dump(users, f)

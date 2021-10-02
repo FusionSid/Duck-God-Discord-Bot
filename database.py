@@ -32,6 +32,19 @@ def search(cmd):
     return c.fetchall()
 
 
-def undo():
+def check_word(msg):
+  banned_words = []
   with conn:
-    conn.rollback()
+    c.execute("SELECT * FROM Banned_Words")
+    banned_words_db = c.fetchall()
+  for word in banned_words_db:
+    for i in word:
+      banned_words.append(i)
+
+  for i in banned_words:
+    msg = msg.replace(" ", "")
+    try:
+      if i.lower() in msg.lower():
+        return True
+    except:
+      print("Error")
