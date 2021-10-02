@@ -1,7 +1,6 @@
 # Imports
 # Please Don't Ruin This Bot
 
-from music_cog import music_cog
 import os
 import discord
 from discord.ext import commands
@@ -135,20 +134,19 @@ async def list_cult_members(ctx,):
 # Counting
 
 
-def countingchannel(ctx):
-    return ctx.channel.id == 865787555378757672
-
-
 @client.command()
 async def c(ctx, num: int):
-    numrn = db["numrn"]
-    if num == numrn + 1:
-        db["numrn"] = num
+    channel = ctx.channel.id
+    if channel == 865787555378757672:
+        numrn = db["numrn"]
+        if num == numrn + 1:
+            db["numrn"] = num
+        else:
+            await ctx.send(embed=discord.Embed(title="The little ducker ruined it", description=f"Duck you {ctx.author.name}"))
+            await ctx.send("Count reset to zero, don't ruin it this time")
+            db["numrn"] = 0
     else:
-        await ctx.send(embed=discord.Embed(title="The little ducker ruined it", description=f"Duck you {ctx.author.name}"))
-        await ctx.send("Count reset to zero, don't ruin it this time")
-        db["numrn"] = 0
-
+        await ctx.send("Youre in the wrong channel go to the counting channel")
 # 8ball
 
 
@@ -223,7 +221,6 @@ async def duckroast(ctx):
     em = discord.Embed(title=roast)
     await ctx.send(embed=em)
 
-# -----------------------------------------------------------------------------------------------------------------------------------
 # Message Commands:
 
 # Message User
@@ -257,11 +254,21 @@ async def feedback(ctx, member="FusionSid", *, message):
     await ctx.channel.purge(limit=1)
     await ctx.send("Feedback Sent")
 
+@client.command(aliases=["rm"])
+async def duckroast(ctx):
+    roast = random.choice(roastlistpy)
+    em = discord.Embed(title=roast)
+    await ctx.send(embed=em)
 
-# Music commands:
-
-client.add_cog(music_cog(client))
-
+@client.command(aliases=["sr"])
+async def sendroast(ctx, member: discord.Member):
+    message = random.choice(roastlistpy)
+    author = ctx.author.name
+    embeddm = discord.Embed(
+        title=message, description="Imagine being roasted by a ducking bot")
+    await member.send(embed=embeddm)
+    await ctx.channel.purge(limit=1)
+    
 # DUCK BATTLE
 
 
@@ -332,7 +339,6 @@ async def battle(ctx, amount: int):
         await ctx.send("Ok")
 
 
-# -----------------------------------------------------------------------------------------------------------------------------------
 # Duck economy stuff:
 
 mainshop = [{"name": "Duck Statue", "price": 100000, "description": "A massive statue of the all mighty Duck God", "buy": True},
@@ -852,64 +858,13 @@ async def update_bank(user, change=0, mode='wallet'):
         json.dump(users, f)
     bal = users[str(user.id)]['wallet'], users[str(user.id)]['bank']
     return bal
-# -----------------------------------------------------------------------------------------------------------------------------------
+
+
 # Admin Commands
 
 
 def is_it_me(ctx):
     return ctx.author.id == 624076054969188363
-
-# List Keys
-
-
-@client.command(aliases=['listkeys', 'keylist', 'klist', 'kl'])
-@commands.check(is_it_me)
-async def listk(ctx):
-    await ctx.channel.purge(limit=1)
-    keys = db.keys()
-    await ctx.send(keys, delete_after=10)
-
-# Delete Key
-
-
-@client.command(aliases=['deletekey', 'dk', 'keydel'])
-@commands.check(is_it_me)
-async def delk(ctx, *, key):
-    await ctx.channel.purge(limit=1)
-    dkey = key
-    del db[dkey]
-    await ctx.send("done", delete_after=10)
-
-# Key value
-
-
-@client.command(aliases=['keyval', 'valkey', 'keyv', 'kv'])
-@commands.check(is_it_me)
-async def kval(ctx, *, key):
-    await ctx.channel.purge(limit=1)
-    value = db[key]
-    await ctx.send(value, delete_after=10)
-
-# Change Key Value
-
-
-@client.command(aliases=['changekv', 'ckv'])
-@commands.check(is_it_me)
-async def ckval(ctx, key, *, val: int):
-    await ctx.channel.purge(limit=1)
-    db[key] = val
-    print(val)
-    await ctx.send(f"{key} has been changed to {val}", delete_after=10)
-
-# Key info
-
-
-@client.command()
-@commands.check(is_it_me)
-async def keyhelp(ctx):
-    em = discord.Embed(title="__Admin Key Commands__\n.dk, .ckv, .kv, kl",
-                       description="Delete Key: .dk <key>\nKey list: .kl\nChange Key Value: .kv <key> <value>\n")
-    await ctx.send(embed=em, delete_after=5)
 
 # Say stuff
 
@@ -990,209 +945,12 @@ async def admincmds(ctx):
 
     await ctx.send(embed=embed, delete_after=5)
 
-# -----------------------------------------------------------------------------------------------------------------------------------
-
 
 @client.command(aliases=['code'])
 async def sourcecode(ctx):
     await ctx.send("https://github.com/FusionSid/Duck-God-Discord-Bot")
 
-# Help and Command list
-
-
-@client.group(invoke_without_command=True, aliases=["duckhelp", "help"])
-async def duckcommandhelp(ctx):
-    em = discord.Embed(title="__**Duck Help**__",
-                       description="use .help <command> for extended info on command", color=ctx.author.color)
-
-    em.add_field(name="__Cult__", value="jc, lc, lcm")
-    em.add_field(name="__Fun/Questions__",
-                 value="8ball, ducksearch, calc, duckroast, c")
-    em.add_field(name="__Message__",
-                 value="feedback, ducksearch, dm, sendroast")
-    em.add_field(name="__Music__", value="play, skip, queue")
-    em.add_field(name="__Duckcoin__",
-                 value="send, bag, sell, buy, dep, with, shop, bal, beg, lb, gamble")
-    em.add_field(name="__Source Code:__",
-                 value="https://github.com/FusionSid/Duck-God-Discord-Bot")
-    em.add_field(name="__More Help:__", value="Dm FusionSid")
-    await ctx.send(embed=em)
-
-# Command list
-
-
-@client.command(aliases=["commandslist"])
-async def commands(ctx):
-    clembed = discord.Embed(
-        title="__List of Duck Bot Commands__", desciption=" ")
-    clembed.add_field(name="\n__.jc__", value="Join cult")
-    clembed.add_field(name="\n__.lc__", value="Leave cult")
-    clembed.add_field(name="\n__.lcm__", value="List cult members")
-    clembed.add_field(name="\n__.dm__", value="Duck God send DM")
-    clembed.add_field(name="\n__.createacc__", value="Create Account")
-
-    clembed.add_field(name="\n__.bal__", value="Balance")
-    clembed.add_field(name="\n__.shop__", value="Shop")
-    clembed.add_field(name="\n__.buy__", value="Buy")
-    clembed.add_field(name="\n__.beg__", value="Beg")
-    clembed.add_field(name="\n__.with__", value="Withdraw")
-    clembed.add_field(name="\n__.dep__", value="Deposit")
-    clembed.add_field(name="\n__.lb__", value="Leaderboard")
-    clembed.add_field(name="\n__.bag__", value="Bag")
-    clembed.add_field(name="\n__.send__", value="Send Money")
-    clembed.add_field(name="\n__.gamble__", value="Gamble")
-    clembed.add_field(name="\n__.sell__", value="Sell")
-
-    clembed.add_field(name="\n__.8ball__", value="8ball")
-    clembed.add_field(name="\n__.ducksearch__", value="Duck Search")
-    clembed.add_field(name="\n__.duckroast__", value="Duck Roast")
-    clembed.add_field(name="\n__.sendroast__", value="Send Roast")
-    clembed.add_field(name="\n__.queue__", value="Queue")
-    clembed.add_field(name="\n__.play__", value="Play Song")
-    clembed.add_field(name="\n__.skip__", value="Skip Song")
-    clembed.add_field(
-        name="\n__.c__", value="Counting - only do in counting channel")
-    clembed.add_field(name="\n__.calc__", value="Calculate.")
-    clembed.add_field(name="\nFor information about command:",
-                      value=".help <commandname(without . prefix)>\n")
-    clembed.add_field(
-        name="Example(for help about the duckroast command):", value=".help duckroast")
-    clembed.add_field(name="For any help:", value=".help")
-    await ctx.send(embed=clembed)
-
-# Custom Help per command
-
-
-@duckcommandhelp.command()
-async def jc(ctx):
-    em = discord.Embed(
-        title="Join Cult", description="Joins the duck cult", color=ctx.author.color)
-    em.add_field(name="Command", value=".jc <@name>")
-    await ctx.send(embed=em)
-
-
-@duckcommandhelp.command()
-async def skip(ctx):
-    em = discord.Embed(
-        title="Skip Song", description="Skips the song currently playing", color=ctx.author.color)
-    em.add_field(name="Command", value=".skip")
-    await ctx.send(embed=em)
-
-
-@duckcommandhelp.command()
-async def play(ctx):
-    em = discord.Embed(
-        title="Play song", description="Joins the duck cult", color=ctx.author.color)
-    em.add_field(name="Command", value=".play <song name>")
-    await ctx.send(embed=em)
-
-
-@duckcommandhelp.command()
-async def queue(ctx):
-    em = discord.Embed(
-        title="List Queue", description="Lists all the songs in the queue", color=ctx.author.color)
-    em.add_field(name="Command", value=".q")
-    await ctx.send(embed=em)
-
-
-@duckcommandhelp.command()
-async def sendroast(ctx):
-    em = discord.Embed(
-        title="Send Roast", description="Duck dms a roast to user of you choice", color=ctx.author.color)
-    em.add_field(name="Command", value=".sendroast <@persontosendto>")
-    await ctx.send(embed=em)
-
-
-@duckcommandhelp.command()
-async def lc(ctx):
-    em = discord.Embed(
-        title="Leave Cult", description="Leaves the duck cult", color=ctx.author.color)
-    em.add_field(name="Command", value=".lc <index>\nIndex's start from 0")
-    await ctx.send(embed=em)
-
-
-@duckcommandhelp.command()
-async def lcm(ctx):
-    em = discord.Embed(title="List Cult Members",
-                       description="Lists all duck member, Pings them too", color=ctx.author.color)
-    em.add_field(name="Command", value=".lcm")
-    await ctx.send(embed=em)
-
-
-@duckcommandhelp.command(aliases=["8ball"])
-async def _8ball(ctx):
-    em = discord.Embed(
-        title="8 Ball", description="Asks the magical 8 ball a question", color=ctx.author.color)
-    em.add_field(name="Command", value=".8ball <question>")
-    await ctx.send(embed=em)
-
-
-@duckcommandhelp.command()
-async def duckroast(ctx):
-    em = discord.Embed(
-        title="Duck Roast", description="Duck god roasts you", color=ctx.author.color)
-    em.add_field(name="Command", value=".duckroast")
-    await ctx.send(embed=em)
-
-
-@duckcommandhelp.command()
-async def c(ctx):
-    em = discord.Embed(title="Counting", description="The number you type must be 1 greater than the previous number. If you type the same number, a number less or too more, count resets to zero", color=ctx.author.color)
-    em.add_field(name="Command", value=".c <number>")
-    await ctx.send(embed=em)
-
-
-@duckcommandhelp.command()
-async def ducksearch(ctx):
-    em = discord.Embed(title="Duck Search\nThe Best Command",
-                       description="Searches the web for a image of you choice", color=ctx.author.color)
-    em.add_field(name="Command", value=".ducksearch <search>")
-    await ctx.send(embed=em)
-
-
-@duckcommandhelp.command()
-async def bal(ctx):
-    em = discord.Embed(title="Duck Balance",
-                       description="Displays you duckcoin bank balance", color=ctx.author.color)
-    em.add_field(name="Command", value=".bal")
-    await ctx.send(embed=em)
-
-
-@duckcommandhelp.command()
-async def dm(ctx):
-    em = discord.Embed(
-        title="Duck DM", description="Duck god DMs user of your choice", color=ctx.author.color)
-    em.add_field(name="Command", value=".dm <@user> <message>")
-    await ctx.send(embed=em)
-
-
-@duckcommandhelp.command()
-async def createacc(ctx):
-    em = discord.Embed(title="Create Account",
-                       description="Creates you a duck bank account", color=ctx.author.color)
-    em.add_field(name="Command", value=".createacc")
-    await ctx.send(embed=em)
-
-
-@duckcommandhelp.command()
-async def beg(ctx):
-    em = discord.Embed(
-        title="Beg", description="Begs for duckcoins", color=ctx.author.color)
-    em.add_field(name="Command", value=".beg")
-    await ctx.send(embed=em)
-
-
-@duckcommandhelp.command()
-async def calc(ctx):
-    em = discord.Embed(
-        title="Calculator", description="Begs for duckcoins", color=ctx.author.color)
-    em.add_field(name="Command",
-                 value=".calc <num1> <operator> <num2>\nOperators: +, -, /, x")
-    await ctx.send(embed=em)
-
-# -----------------------------------------------------------------------------------------------------------------------------------
 # Errors
-
 
 @client.event
 async def on_command_error(ctx, error):
@@ -1217,8 +975,14 @@ async def on_command_error(ctx, error):
     else:
         print("An error has occured:")
         await ctx.send("ERROR", delete_after=1)
-# -----------------------------------------------------------------------------------------------------------------------------------
+
 # Run
+
+extensions = ['cogs.Music', 'cogs.Help', 'cogs.Fun']
+
+if __name__ == 'main':
+    for ext in extensions:
+        client.load_extension(ext)
 
 keep_alive()
 client.run(os.environ['Token'])

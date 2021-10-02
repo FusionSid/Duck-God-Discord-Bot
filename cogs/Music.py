@@ -3,7 +3,7 @@ from discord.ext import commands
 
 from youtube_dl import YoutubeDL
 
-class music_cog(commands.Cog):
+class Music(commands.Cog):
     def __init__(self, client):
         self.client = client
     
@@ -100,3 +100,6 @@ class music_cog(commands.Cog):
             self.vc.stop()
             #try to play next in the queue if it exists
             await self.play_music()
+
+def setup(client):
+    client.add_cog(Music(client))
